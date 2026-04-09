@@ -4,12 +4,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../config/colors';
 
 const WATCHLIST = [
-  { name: '삼성전자', price: '213,000원', change: '8.40%', logo: require('../../assets/logos/samsung.png') },
-  { name: '아모레퍼시픽', price: '131,100원', change: '2.66%', logo: require('../../assets/logos/amorepacific.png') },
-  { name: '에이피알', price: '339,000원', change: '6.60%', logo: require('../../assets/logos/apr.png') },
-  { name: 'SK하이닉스', price: '1,043,000원', change: '13.86%', logo: require('../../assets/logos/skhynix.png') },
-  { name: '키움증권', price: '461,000원', change: '12.58%', logo: require('../../assets/logos/kiwoom.png') },
+  { name: '삼성전자', price: '202,500원', change: '-3.80%', logo: require('../../assets/logos/samsung.png') },
+  { name: '아모레퍼시픽', price: '129,000원', change: '-1.00%', logo: require('../../assets/logos/amorepacific.png') },
+  { name: '에이피알', price: '362,500원', change: '+8.05%', logo: require('../../assets/logos/apr.png') },
+  { name: 'SK하이닉스', price: '994,000원', change: '-3.78%', logo: require('../../assets/logos/skhynix.png') },
+  { name: '키움증권', price: '447,000원', change: '-2.72%', logo: require('../../assets/logos/kiwoom.png') },
 ];
+
+function isNegativeChange(change: string): boolean {
+  return /^[-−]/.test(change.trim());
+}
 
 export function WatchlistScreen() {
   return (
@@ -37,8 +41,12 @@ export function WatchlistScreen() {
               </View>
               <Text style={styles.name}>{item.name}</Text>
               <View style={{ marginLeft: 'auto', alignItems: 'flex-end' }}>
-                <Text style={styles.price}>{item.price}</Text>
-                <Text style={styles.change}>{item.change}</Text>
+                <Text style={[styles.price, isNegativeChange(item.change) && styles.priceNegative]}>
+                  {item.price}
+                </Text>
+                <Text style={[styles.change, isNegativeChange(item.change) && styles.changeNegative]}>
+                  {item.change}
+                </Text>
               </View>
             </View>
           ))}
@@ -70,5 +78,7 @@ const styles = StyleSheet.create({
   logo: { width: '100%', height: '100%' },
   name: { fontSize: 16, color: Colors.text, fontWeight: '700' },
   price: { fontSize: 19, color: '#D34588', fontWeight: '800' },
+  priceNegative: { color: '#4C61C9' },
   change: { fontSize: 12, color: '#D34588', fontWeight: '700' },
+  changeNegative: { color: '#4C61C9' },
 });

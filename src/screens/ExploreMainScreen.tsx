@@ -13,36 +13,36 @@ const RANKS = [
   {
     rank: 1,
     name: '키움증권',
-    price: '124,300원',
-    chg: '3.12%',
+    price: '447,000원',
+    chg: '-2.72%',
     logo: require('../../assets/logos/kiwoom.png'),
   },
   {
     rank: 2,
     name: '삼성전자',
-    price: '211,500원',
-    chg: '7.63%',
+    price: '202,500원',
+    chg: '-3.80%',
     logo: require('../../assets/logos/samsung_new.png'),
   },
   {
     rank: 3,
     name: 'SK하이닉스',
-    price: '1,036,000원',
-    chg: '13.10%',
+    price: '994,000원',
+    chg: '-3.78%',
     logo: require('../../assets/logos/skhynix_new.png'),
   },
   {
     rank: 4,
     name: '에이피알',
-    price: '303,500원',
-    chg: '5.27%',
+    price: '362,500원',
+    chg: '8.05%',
     logo: require('../../assets/logos/apr.png'),
   },
   {
     rank: 5,
     name: '아모레퍼시픽',
-    price: '174,200원',
-    chg: '2.84%',
+    price: '129,000원',
+    chg: '-1.00%',
     logo: require('../../assets/logos/amorepacific.png'),
   },
 ];
@@ -69,6 +69,10 @@ const RANK_TABS = ['많이보는', '많이사는', '많이파는', '가격급등
 const MASTER_AGE_TABS = ['20대', '30대', '40대', '50대', '60대'] as const;
 
 const KIWOOM_HEADER_LOGO = require('../../assets/logos/kiwoom.png');
+
+function isNegativeChange(chg: string): boolean {
+  return /^[-−]/.test(chg.trim());
+}
 
 export function ExploreMainScreen({ navigation }: Props) {
   const [activeRankTab, setActiveRankTab] = useState(0);
@@ -186,8 +190,12 @@ export function ExploreMainScreen({ navigation }: Props) {
                 <Text style={styles.name}>{item.name}</Text>
               </View>
               <View style={{ alignItems: 'flex-end' }}>
-                <Text style={styles.price}>{item.price}</Text>
-                <Text style={styles.change}>{item.chg}</Text>
+                <Text style={[styles.price, isNegativeChange(item.chg) && styles.priceNegative]}>
+                  {item.price}
+                </Text>
+                <Text style={[styles.change, isNegativeChange(item.chg) && styles.changeNegative]}>
+                  {item.chg}
+                </Text>
               </View>
             </Pressable>
           ))}
@@ -394,8 +402,12 @@ export function ExploreMainScreen({ navigation }: Props) {
                 <Text style={styles.name}>{item.name}</Text>
               </View>
               <View style={{ alignItems: 'flex-end' }}>
-                <Text style={styles.price}>{item.price}</Text>
-                <Text style={styles.change}>{item.chg}</Text>
+                <Text style={[styles.price, isNegativeChange(item.chg) && styles.priceNegative]}>
+                  {item.price}
+                </Text>
+                <Text style={[styles.change, isNegativeChange(item.chg) && styles.changeNegative]}>
+                  {item.chg}
+                </Text>
               </View>
             </View>
           ))}
@@ -615,7 +627,9 @@ const styles = StyleSheet.create({
   rank: { width: 18, fontSize: 16, color: '#434758', fontWeight: '600' },
   name: { fontSize: 18, color: Colors.text, fontWeight: '700' },
   price: { fontSize: 18, color: '#DD3C8A', fontWeight: '800' },
+  priceNegative: { color: '#4C61C9' },
   change: { fontSize: 16, color: '#DD3C8A', fontWeight: '600' },
+  changeNegative: { color: '#4C61C9' },
   cardSubTitle: { fontSize: 14, color: '#7A7E8F', marginBottom: 4, fontWeight: '600' },
   tableHead: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8 },
   tableHeadSpacer: { width: 64 },
