@@ -128,6 +128,7 @@ export function ExploreMainScreen({ navigation }: Props) {
             </View>
           </View>
           <View style={styles.rankTabRowOuter}>
+            <View style={styles.rankTabBaseLine} />
             <ScrollView
               horizontal
               nestedScrollEnabled
@@ -149,11 +150,7 @@ export function ExploreMainScreen({ navigation }: Props) {
                   >
                     {label}
                   </Text>
-                  {activeRankTab === i ? (
-                    <View style={styles.rankTabUnderline} />
-                  ) : (
-                    <View style={styles.rankTabUnderlinePlaceholder} />
-                  )}
+                  {activeRankTab === i ? <View style={styles.rankTabUnderline} /> : null}
                 </Pressable>
               ))}
             </ScrollView>
@@ -413,15 +410,22 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   /** 랭킹 카드 헤더만: 공용 cardTitle의 marginBottom 제거 */
-  rankCardTitle: { marginBottom: 0, fontSize: 25 },
+  rankCardTitle: { marginBottom: 0, fontSize: 25, fontWeight: '900' },
   candleWrap: { flexDirection: 'row', alignItems: 'flex-end', gap: 4, paddingRight: 2 },
   candleStick: { width: 2, backgroundColor: '#BABFCD', borderRadius: 1 },
   candleBody: { width: 8, borderRadius: 4 },
   rankTabRowOuter: {
     marginTop: 6,
     marginBottom: 6,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E8EAF3',
+    position: 'relative',
+  },
+  rankTabBaseLine: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 2,
+    backgroundColor: '#EEF1F6',
   },
   rankTabScroll: { marginHorizontal: -2 },
   rankTabScrollContent: {
@@ -430,18 +434,22 @@ const styles = StyleSheet.create({
     paddingBottom: 2,
     paddingRight: 8,
   },
-  rankTabItem: { marginRight: 20, paddingBottom: 6, flexShrink: 0 },
-  rankTabUnderlinePlaceholder: { marginTop: 6, height: 3, width: 48, opacity: 0 },
+  rankTabItem: { marginRight: 20, paddingBottom: 8, flexShrink: 0, position: 'relative' },
   rankTabText: { fontSize: 17, color: '#6D7182', fontWeight: '600' },
   rankTabTextActive: { color: Colors.primary, fontWeight: '800' },
-  rankTabUnderline: { marginTop: 6, height: 3, width: 48, backgroundColor: Colors.primary, borderRadius: 2 },
+  rankTabUnderline: {
+    position: 'absolute',
+    bottom: 0,
+    height: 2,
+    width: 57,
+    backgroundColor: Colors.primary,
+    borderRadius: 2,
+  },
   cardTitle: { fontSize: 18, fontWeight: '800', color: Colors.text, marginBottom: 10 },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 9,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F0F1F7',
     gap: 8,
   },
   logoCircle: {
