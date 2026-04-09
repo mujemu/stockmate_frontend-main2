@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Colors } from '../config/colors';
 
 interface Props {
@@ -13,35 +14,35 @@ const RANKS = [
     rank: 1,
     name: '키움증권',
     price: '124,300원',
-    chg: '+3.12%',
+    chg: '3.12%',
     logo: require('../../assets/logos/kiwoom.png'),
   },
   {
     rank: 2,
     name: '삼성전자',
     price: '211,500원',
-    chg: '+7.63%',
+    chg: '7.63%',
     logo: require('../../assets/logos/samsung_new.png'),
   },
   {
     rank: 3,
     name: 'SK하이닉스',
     price: '1,036,000원',
-    chg: '+13.10%',
+    chg: '13.10%',
     logo: require('../../assets/logos/skhynix_new.png'),
   },
   {
     rank: 4,
     name: '에이피알',
     price: '303,500원',
-    chg: '+5.27%',
+    chg: '5.27%',
     logo: require('../../assets/logos/apr.png'),
   },
   {
     rank: 5,
     name: '아모레퍼시픽',
     price: '174,200원',
-    chg: '+2.84%',
+    chg: '2.84%',
     logo: require('../../assets/logos/amorepacific.png'),
   },
 ];
@@ -52,18 +53,39 @@ const INDEX_CARDS = [
   { id: 'kospi200', label: '코스피200', value: '882.90', chg: '+61.71 (7.51%)' },
 ];
 
+const RANK_TABS = ['많이보는', '많이사는', '많이파는', '가격급등', '가격급락'] as const;
+
+const KIWOOM_HEADER_LOGO = require('../../assets/logos/kiwoom.png');
+
 export function ExploreMainScreen({ navigation }: Props) {
+  const [activeRankTab, setActiveRankTab] = useState(0);
+
   return (
     <SafeAreaView style={styles.safe}>
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.topHeader}>
-          <Text style={styles.header}>탐색</Text>
+          <View style={styles.logoTitleRow}>
+            <Image
+              source={KIWOOM_HEADER_LOGO}
+              style={styles.headerKiwoomLogo}
+              resizeMode="contain"
+            />
+            <Text style={styles.header}>탐색</Text>
+          </View>
           <View style={styles.quickTop}>
             <View style={styles.simpleToggle}>
-              <Text style={styles.simpleText}>일반</Text>
-              <View style={styles.simpleOn}>
-                <Text style={styles.simpleOnText}>간편</Text>
+              <View style={styles.simpleLeft}>
+                <Text style={styles.simpleText}>일반</Text>
               </View>
+              <LinearGradient
+                colors={['#5B63F5', '#B54DFF', '#E73FA0']}
+                locations={[0, 0.55, 1]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.simpleOn}
+              >
+                <Text style={styles.simpleOnText}>간편</Text>
+              </LinearGradient>
             </View>
             <Ionicons name="search-outline" size={28} color="#262A35" />
             <Ionicons name="notifications-outline" size={28} color="#262A35" />
@@ -95,7 +117,7 @@ export function ExploreMainScreen({ navigation }: Props) {
 
         <View style={styles.card}>
           <View style={styles.rankHeaderRow}>
-            <Text style={styles.cardTitle}>실시간 랭킹 TOP5</Text>
+            <Text style={[styles.cardTitle, styles.rankCardTitle]}> 실시간 랭킹 TOP5</Text>
             <View style={styles.candleWrap}>
               <View style={[styles.candleStick, { height: 26 }]} />
               <View style={[styles.candleBody, { backgroundColor: '#E73FA0', height: 24 }]} />
@@ -105,20 +127,36 @@ export function ExploreMainScreen({ navigation }: Props) {
               <View style={[styles.candleBody, { backgroundColor: '#E73FA0', height: 20 }]} />
             </View>
           </View>
-          <View style={styles.rankTabRow}>
-            <Pressable style={styles.rankTabItem}>
-              <Text style={[styles.rankTabText, styles.rankTabTextActive]}>많이보는</Text>
-              <View style={styles.rankTabUnderline} />
-            </Pressable>
-            <Pressable style={styles.rankTabItem}>
-              <Text style={styles.rankTabText}>많이사는</Text>
-            </Pressable>
-            <Pressable style={styles.rankTabItem}>
-              <Text style={styles.rankTabText}>많이파는</Text>
-            </Pressable>
-            <Pressable style={styles.rankTabItem}>
-              <Text style={styles.rankTabText}>가격급등</Text>
-            </Pressable>
+          <View style={styles.rankTabRowOuter}>
+            <ScrollView
+              horizontal
+              nestedScrollEnabled
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.rankTabScrollContent}
+              style={styles.rankTabScroll}
+            >
+              {RANK_TABS.map((label, i) => (
+                <Pressable
+                  key={label}
+                  style={styles.rankTabItem}
+                  onPress={() => setActiveRankTab(i)}
+                >
+                  <Text
+                    style={[
+                      styles.rankTabText,
+                      activeRankTab === i && styles.rankTabTextActive,
+                    ]}
+                  >
+                    {label}
+                  </Text>
+                  {activeRankTab === i ? (
+                    <View style={styles.rankTabUnderline} />
+                  ) : (
+                    <View style={styles.rankTabUnderlinePlaceholder} />
+                  )}
+                </Pressable>
+              ))}
+            </ScrollView>
           </View>
           {RANKS.map((item) => (
             <Pressable
@@ -299,18 +337,32 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 10,
   },
+  logoTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 0 },
+  /** 글자(fontSize 28)와 시각적 높이를 맞추기 위해 여백 보정(이미지 자체 패딩) */
+  headerKiwoomLogo: { width: 46, height: 46 },
   header: { fontSize: 28, fontWeight: '800', color: Colors.text },
   quickTop: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  /** 일반·간편 공통 흰 트랙 + 얇은 테두리 */
   simpleToggle: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#ECEDEF',
-    borderRadius: 16,
-    padding: 2,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderRadius: 999,
+    padding: 3,
+    gap: 2,
   },
-  simpleText: { paddingHorizontal: 8, color: '#535868', fontWeight: '700', fontSize: 12 },
+  /** 비선택 — 트랙 흰색 위에 글자만 */
+  simpleLeft: {
+    paddingLeft: 8,
+    paddingRight: 2,
+    paddingVertical: 3,
+    justifyContent: 'center',
+  },
+  simpleText: { color: '#535868', fontWeight: '700', fontSize: 12 },
+  /** 선택 — 그라데이션 pill */
   simpleOn: {
-    backgroundColor: Colors.primary,
     borderRadius: 14,
     paddingHorizontal: 9,
     paddingVertical: 4,
@@ -321,7 +373,7 @@ const styles = StyleSheet.create({
     height: 42,
     minWidth: 72,
     borderRadius: 21,
-    backgroundColor: '#ECEDEF',
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 18,
@@ -351,19 +403,35 @@ const styles = StyleSheet.create({
     padding: 14,
     marginBottom: 12,
   },
-  rankHeaderRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  rankHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 14,
+    marginTop: 2,
+    marginBottom: 4,
+  },
+  /** 랭킹 카드 헤더만: 공용 cardTitle의 marginBottom 제거 */
+  rankCardTitle: { marginBottom: 0, fontSize: 25 },
   candleWrap: { flexDirection: 'row', alignItems: 'flex-end', gap: 4, paddingRight: 2 },
   candleStick: { width: 2, backgroundColor: '#BABFCD', borderRadius: 1 },
   candleBody: { width: 8, borderRadius: 4 },
-  rankTabRow: {
-    marginTop: -2,
+  rankTabRowOuter: {
+    marginTop: 6,
     marginBottom: 6,
-    flexDirection: 'row',
     borderBottomWidth: 1,
     borderBottomColor: '#E8EAF3',
   },
-  rankTabItem: { marginRight: 18, paddingBottom: 8 },
-  rankTabText: { fontSize: 14, color: '#6D7182', fontWeight: '600' },
+  rankTabScroll: { marginHorizontal: -2 },
+  rankTabScrollContent: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    paddingBottom: 2,
+    paddingRight: 8,
+  },
+  rankTabItem: { marginRight: 20, paddingBottom: 6, flexShrink: 0 },
+  rankTabUnderlinePlaceholder: { marginTop: 6, height: 3, width: 48, opacity: 0 },
+  rankTabText: { fontSize: 17, color: '#6D7182', fontWeight: '600' },
   rankTabTextActive: { color: Colors.primary, fontWeight: '800' },
   rankTabUnderline: { marginTop: 6, height: 3, width: 48, backgroundColor: Colors.primary, borderRadius: 2 },
   cardTitle: { fontSize: 18, fontWeight: '800', color: Colors.text, marginBottom: 10 },
