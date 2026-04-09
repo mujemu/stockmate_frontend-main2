@@ -118,14 +118,11 @@ export function ExploreMainScreen({ navigation }: Props) {
         <View style={styles.card}>
           <View style={styles.rankHeaderRow}>
             <Text style={[styles.cardTitle, styles.rankCardTitle]}> 실시간 랭킹 TOP5</Text>
-            <View style={styles.candleWrap}>
-              <View style={[styles.candleStick, { height: 26 }]} />
-              <View style={[styles.candleBody, { backgroundColor: '#E73FA0', height: 24 }]} />
-              <View style={[styles.candleStick, { height: 18 }]} />
-              <View style={[styles.candleBody, { backgroundColor: '#3A6EF5', height: 28 }]} />
-              <View style={[styles.candleStick, { height: 30 }]} />
-              <View style={[styles.candleBody, { backgroundColor: '#E73FA0', height: 20 }]} />
-            </View>
+            <Image
+              source={require('../../assets/icons/TOP5.png')}
+              style={styles.rankTop5Icon}
+              resizeMode="contain"
+            />
           </View>
           <View style={styles.rankTabRowOuter}>
             <View style={styles.rankTabBaseLine} />
@@ -411,9 +408,7 @@ const styles = StyleSheet.create({
   },
   /** 랭킹 카드 헤더만: 공용 cardTitle의 marginBottom 제거 */
   rankCardTitle: { marginBottom: 0, fontSize: 25, fontWeight: '900' },
-  candleWrap: { flexDirection: 'row', alignItems: 'flex-end', gap: 4, paddingRight: 2 },
-  candleStick: { width: 2, backgroundColor: '#BABFCD', borderRadius: 1 },
-  candleBody: { width: 8, borderRadius: 4 },
+  rankTop5Icon: { width: 102, height: 62, marginRight: -18 },
   rankTabRowOuter: {
     marginTop: 6,
     marginBottom: 6,

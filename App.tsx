@@ -92,7 +92,12 @@ function MainTabs() {
         tabBarInactiveTintColor: Colors.textMuted,
         tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
         tabBarStyle: {
-          borderTopColor: Colors.border,
+          position: 'absolute',
+          borderTopWidth: 0,
+          borderTopColor: 'transparent',
+          elevation: 0,
+          shadowOpacity: 0,
+          backgroundColor: 'rgba(255,255,255,0.96)',
           paddingTop: 4,
           minHeight: 52,
         },
