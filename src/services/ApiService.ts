@@ -1,29 +1,26 @@
-import axios from 'axios';
-import { BASE_URL } from '../config/api';
 import { Character, characterFromJson } from '../models/Character';
-
-const api = axios.create({ baseURL: BASE_URL });
+import { http } from './httpClient';
 
 export const ApiService = {
   async getCharacters(): Promise<Character[]> {
-    const { data } = await api.get('/characters');
+    const { data } = await http.get('/characters');
     return data.map(characterFromJson);
   },
 
   async searchCharacters(query: string): Promise<Character[]> {
-    const { data } = await api.get('/characters/search', { params: { q: query } });
+    const { data } = await http.get('/characters/search', { params: { q: query } });
     return data.map(characterFromJson);
   },
 
   async registerCharacter(companyName: string, themeColor: string) {
-    const { data } = await api.post('/characters/register', null, {
+    const { data } = await http.post('/characters/register', null, {
       params: { company_name: companyName, theme_color: themeColor },
     });
     return data;
   },
 
   async startSession(characterId: string, companyName: string) {
-    const { data } = await api.post('/sessions/start', {
+    const { data } = await http.post('/sessions/start', {
       character_id: characterId,
       company_name: companyName,
       user_id: 'app_user',
@@ -32,36 +29,36 @@ export const ApiService = {
   },
 
   async chat(sessionId: string, message: string) {
-    const { data } = await api.post(`/sessions/${sessionId}/chat`, {
+    const { data } = await http.post(`/sessions/${sessionId}/chat`, {
       user_message: message,
     });
     return data;
   },
 
   async getSessions(companyName: string) {
-    const { data } = await api.get('/sessions', { params: { company_name: companyName } });
+    const { data } = await http.get('/sessions', { params: { company_name: companyName } });
     return data as any[];
   },
 
   async getReview(sessionId: string) {
-    const { data } = await api.post(`/sessions/${sessionId}/review`);
+    const { data } = await http.post(`/sessions/${sessionId}/review`);
     return data;
   },
 
   async getSuggestions(sessionId: string): Promise<string[]> {
-    const { data } = await api.get(`/sessions/${sessionId}/suggestions`);
+    const { data } = await http.get(`/sessions/${sessionId}/suggestions`);
     return data.suggestions ?? [];
   },
 
   async getNews(characterId: string, display = 3, companyName = '') {
-    const { data } = await api.get(`/news/naver/${characterId}`, {
+    const { data } = await http.get(`/news/naver/${characterId}`, {
       params: { display, company_name: companyName },
     });
     return (data.items ?? []) as any[];
   },
 
   async getNewsAnalyzed(characterId: string, excludeTitles: string[] = [], companyName = '') {
-    const { data } = await api.post(`/news/naver/${characterId}/analyzed`, {
+    const { data } = await http.post(`/news/naver/${characterId}/analyzed`, {
       exclude_titles: excludeTitles,
       company_name: companyName,
     });
@@ -69,21 +66,21 @@ export const ApiService = {
   },
 
   async getDisclosuresStructured(characterId: string, companyName = '', corpCode = '') {
-    const { data } = await api.get(`/news/dart/${characterId}/explain-structured`, {
+    const { data } = await http.get(`/news/dart/${characterId}/explain-structured`, {
       params: { company_name: companyName, corp_code: corpCode },
     });
     return data;
   },
 
   async getAnalystReports(characterId: string, companyName = '') {
-    const { data } = await api.get(`/news/analyst/${characterId}`, {
+    const { data } = await http.get(`/news/analyst/${characterId}`, {
       params: { company_name: companyName },
     });
     return data;
   },
 
   async getStockInfo(characterId: string) {
-    const { data } = await api.get(`/kiwoom/stock/${characterId}`);
+    const { data } = await http.get(`/kiwoom/stock/${characterId}`);
     return data;
   },
 
@@ -94,7 +91,7 @@ export const ApiService = {
     price: number;
     marketOrder: boolean;
   }) {
-    const { data } = await api.post('/kiwoom/order', {
+    const { data } = await http.post('/kiwoom/order', {
       character_id: params.characterId,
       order_type: params.orderType,
       quantity: params.quantity,
