@@ -53,12 +53,26 @@ const INDEX_CARDS = [
   { id: 'kospi200', label: '코스피200', value: '882.90', chg: '+61.71 (7.51%)' },
 ];
 
+const NEWS_ITEMS = [
+  { id: 'n1', title: "민간 주도 수출 거점 '글로벌베이스캠프' 첫 도입......", meta: '04.09  17:44  · 머니투데이' },
+  { id: 'n2', title: '울산조선소 해군 잠수함 화재...1명 실종', meta: '04.09  17:44  · 한국경제' },
+  { id: 'n3', title: '급한 진중오 "정부, 전공 수정으로 중국인 표 사려..."', meta: '04.09  17:44  · 머니투데이' },
+] as const;
+
+const STORY_ITEMS = [
+  { id: 's1', title: '모두 사이좋게 역대급 실적', category: '증권' },
+  { id: 's2', title: '양수겸장', category: '유틸리티' },
+  { id: 's3', title: '가치의 귀환', category: '제약/바이오 인싸이트' },
+] as const;
+
 const RANK_TABS = ['많이보는', '많이사는', '많이파는', '가격급등', '가격급락'] as const;
+const MASTER_AGE_TABS = ['20대', '30대', '40대', '50대', '60대'] as const;
 
 const KIWOOM_HEADER_LOGO = require('../../assets/logos/kiwoom.png');
 
 export function ExploreMainScreen({ navigation }: Props) {
   const [activeRankTab, setActiveRankTab] = useState(0);
+  const [activeMasterAgeTab, setActiveMasterAgeTab] = useState(0);
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -117,7 +131,7 @@ export function ExploreMainScreen({ navigation }: Props) {
 
         <View style={styles.card}>
           <View style={styles.rankHeaderRow}>
-            <Text style={[styles.cardTitle, styles.rankCardTitle]}> 실시간 랭킹 TOP5</Text>
+            <Text style={[styles.cardTitle, styles.rankCardTitle]}>실시간 랭킹 TOP5</Text>
             <Image
               source={require('../../assets/icons/TOP5.png')}
               style={styles.rankTop5Icon}
@@ -177,18 +191,22 @@ export function ExploreMainScreen({ navigation }: Props) {
               </View>
             </Pressable>
           ))}
-          <Pressable style={styles.moreBtn}>
+          <Pressable style={[styles.moreBtn, styles.mapMoreBtn]}>
             <Text style={styles.moreText}>더보기</Text>
           </Pressable>
         </View>
 
         <View style={styles.card}>
           <Text style={styles.cardSubTitle}>누가 사고 팔고 있을까</Text>
-          <Text style={styles.cardTitle}>투자자별 매매 동향</Text>
+          <View style={styles.trendTitleRow}>
+            <Text style={[styles.cardTitle, styles.trendCardTitle]}>투자자별 매매 동향</Text>
+            <Ionicons name="refresh-outline" size={24} color="#7A7E8F" />
+          </View>
           <View style={styles.tableHead}>
-            <Text style={styles.tableHeadTxt}>개인</Text>
-            <Text style={styles.tableHeadTxt}>외국인</Text>
-            <Text style={styles.tableHeadTxt}>기관</Text>
+            <View style={styles.tableHeadSpacer} />
+            <Text style={[styles.tableHeadTxt, styles.tableHeadTxtPersonal]}>개인</Text>
+            <Text style={[styles.tableHeadTxt, styles.tableHeadTxtForeign]}>외국인</Text>
+            <Text style={[styles.tableHeadTxt, styles.tableHeadTxtInstitution]}>기관</Text>
           </View>
           <View style={styles.tableRow}>
             <Text style={styles.tableLabel}>코스피</Text>
@@ -208,50 +226,90 @@ export function ExploreMainScreen({ navigation }: Props) {
         </View>
 
         <View style={styles.card}>
-          <Text style={styles.cardSubTitle}>모두의 커뮤니티</Text>
-          <Text style={styles.cardTitle}>종목 토론</Text>
-          <View style={styles.talkRow}>
+          <View style={styles.talkHeaderRow}>
+            <View>
+              <Text style={styles.cardSubTitle}>모두의 커뮤니티</Text>
+              <Text style={[styles.cardTitle, styles.talkCardTitle]}>종목 토론</Text>
+            </View>
+            <Image
+              source={require('../../assets/icons/stock_discussion.png')}
+              style={styles.talkHeaderIcon}
+              resizeMode="contain"
+            />
+          </View>
+          <View style={[styles.talkRow, styles.talkRowFirst]}>
             <View style={styles.logoCircleSmall}>
               <Image source={RANKS[0].logo} style={styles.logo} resizeMode="cover" />
             </View>
-            <View style={{ flex: 1 }}>
+            <View style={styles.talkContent}>
               <Text style={styles.talkName}>{RANKS[0].name}</Text>
               <Text style={styles.talkText}>불장 예상됩니다!</Text>
+              <Text style={styles.talkTime}>0 분전</Text>
             </View>
-            <Text style={styles.tablePink}>{RANKS[0].chg}</Text>
+            <View style={styles.talkRight}>
+              <Text style={styles.talkChange}>{RANKS[0].chg}</Text>
+            </View>
           </View>
           <View style={styles.talkRow}>
             <View style={styles.logoCircleSmall}>
               <Image source={RANKS[1].logo} style={styles.logo} resizeMode="cover" />
             </View>
-            <View style={{ flex: 1 }}>
+            <View style={styles.talkContent}>
               <Text style={styles.talkName}>{RANKS[1].name}</Text>
               <Text style={styles.talkText}>주주는 이렇게 캐릭터 옆에 주라도 뜸</Text>
+              <Text style={styles.talkTime}>1 분전</Text>
             </View>
-            <Text style={styles.tablePink}>{RANKS[1].chg}</Text>
+            <View style={styles.talkRight}>
+              <Text style={styles.talkChange}>{RANKS[1].chg}</Text>
+            </View>
           </View>
           <Pressable style={styles.moreBtn}>
             <Text style={styles.moreText}>더보기</Text>
           </Pressable>
         </View>
 
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>실시간 뉴스</Text>
-          <Text style={styles.news}>중기·국방부, 방산 10개 분야 지원</Text>
-          <Text style={styles.news}>미국 소비지표 발표 대기, 기술주 혼조</Text>
-          <Text style={styles.news}>나스피 평가: 철강 업황 단기 약화 전환 가능성</Text>
-          <Pressable style={styles.moreBtn}>
-            <Text style={styles.moreText}>더보기</Text>
-          </Pressable>
+        <View style={[styles.card, styles.newsCard]}>
+          <View style={styles.newsHeaderRow}>
+            <Text style={[styles.cardTitle, styles.newsCardTitle]}>실시간 뉴스</Text>
+            <Image
+              source={require('../../assets/icons/realtime_news.png')}
+              style={styles.newsHeaderIcon}
+              resizeMode="contain"
+            />
+          </View>
+          <View style={styles.newsBody}>
+            {NEWS_ITEMS.map((item, idx) => (
+              <View
+                key={item.id}
+                style={[styles.newsItem, idx === NEWS_ITEMS.length - 1 && styles.newsItemLast]}
+              >
+                <Text style={styles.newsTitle}>{item.title}</Text>
+                <Text style={styles.newsMeta}>{item.meta}</Text>
+              </View>
+            ))}
+            <Pressable style={styles.moreBtn}>
+              <Text style={styles.moreText}>더보기</Text>
+            </Pressable>
+          </View>
         </View>
 
-        <View style={styles.card}>
-          <Text style={styles.cardSubTitle}>더 쉽고 간편하게 주식을 모아주는</Text>
-          <Text style={styles.cardTitle}>주식 더모으기</Text>
-          <View style={styles.collectRow}>
+        <View style={[styles.card, styles.collectCardPlain]}>
+          <View style={styles.collectHeaderRow}>
+            <View>
+              <Text style={styles.cardSubTitle}>더 쉽고 간편하게 주식을 모아주는</Text>
+              <Text style={[styles.cardTitle, styles.collectCardTitle]}>주식 더모으기</Text>
+            </View>
+            <Ionicons name="add" size={28} color="#5F6372" style={styles.collectAddIcon} />
+          </View>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.collectScroll}
+            contentContainerStyle={[styles.collectRow, styles.collectRowContent]}
+          >
             {RANKS.map((item) => (
               <View key={`collect-${item.rank}`} style={styles.collectItem}>
-                <View style={styles.logoCircleSmall}>
+                <View style={styles.collectLogoCircle}>
                   <Image source={item.logo} style={styles.logo} resizeMode="cover" />
                 </View>
                 <Text style={styles.collectName} numberOfLines={1}>
@@ -259,23 +317,73 @@ export function ExploreMainScreen({ navigation }: Props) {
                 </Text>
               </View>
             ))}
-          </View>
+          </ScrollView>
         </View>
 
         <View style={styles.card}>
-          <Text style={styles.cardSubTitle}>키움이 전해드리는</Text>
-          <Text style={styles.cardTitle}>투자 이야기</Text>
-          <Text style={styles.story}>DL이앤씨 수주 우려를 덜어줄 SMR 모멘텀</Text>
-          <Text style={styles.story}>LG에너지솔루션 1Q26 잠정 실적 리뷰</Text>
-          <Text style={styles.story}>풍산홀딩스 / 흥구석유 / 에코프로머티 / 엘앤에프...</Text>
-          <Pressable style={styles.moreBtn}>
+          <View style={styles.storyHeaderRow}>
+            <View>
+              <Text style={styles.cardSubTitle}>키움이 전해드리는</Text>
+              <Text style={[styles.cardTitle, styles.storyCardTitle]}>투자 이야기</Text>
+            </View>
+            <Image
+              source={require('../../assets/icons/investment_story.png')}
+              style={styles.storyHeaderIcon}
+              resizeMode="contain"
+            />
+          </View>
+          <View style={styles.storyList}>
+            {STORY_ITEMS.map((item, idx) => (
+              <View
+                key={item.id}
+                style={[
+                  styles.storyItem,
+                  idx === 0 && styles.storyFirstItem,
+                  idx === STORY_ITEMS.length - 1 && styles.storyItemLast,
+                ]}
+              >
+                <Text style={styles.storyTitle}>{item.title}</Text>
+                <Text style={styles.storyCategory}>{item.category}</Text>
+              </View>
+            ))}
+          </View>
+          <Pressable style={[styles.moreBtn, styles.storyMoreBtn]}>
             <Text style={styles.moreText}>더보기</Text>
           </Pressable>
         </View>
 
         <View style={styles.card}>
-          <Text style={styles.cardSubTitle}>연령대별로 바라본</Text>
-          <Text style={styles.cardTitle}>고수의 주식 보유 순위</Text>
+          <View style={styles.masterHeaderRow}>
+            <View>
+              <Text style={styles.cardSubTitle}>연령대별로 바라본</Text>
+              <Text style={[styles.cardTitle, styles.masterCardTitle]}>고수의 주식 보유 순위</Text>
+            </View>
+            <Image
+              source={require('../../assets/icons/Masters_Shareholding_Rankings.png')}
+              style={styles.masterHeaderIcon}
+              resizeMode="contain"
+            />
+          </View>
+          <View style={styles.masterAgeTabRow}>
+            {MASTER_AGE_TABS.map((label, idx) => (
+              <Pressable
+                key={label}
+                style={styles.masterAgeTabItem}
+                onPress={() => setActiveMasterAgeTab(idx)}
+              >
+                <Text
+                  style={[
+                    styles.masterAgeTabText,
+                    idx === activeMasterAgeTab && styles.masterAgeTabTextActive,
+                  ]}
+                >
+                  {label}
+                </Text>
+                {idx === activeMasterAgeTab ? <View style={styles.masterAgeUnderline} /> : null}
+              </Pressable>
+            ))}
+            <View style={styles.masterAgeBaseLine} />
+          </View>
           {RANKS.map((item) => (
             <View key={`master-${item.rank}`} style={styles.row}>
               <Text style={styles.rank}>{item.rank}</Text>
@@ -297,15 +405,51 @@ export function ExploreMainScreen({ navigation }: Props) {
         </View>
 
         <View style={styles.card}>
-          <Text style={styles.cardSubTitle}>오늘 이 테마가 많이 거래돼요</Text>
-          <Text style={styles.cardTitle}>국내 마켓맵</Text>
+          <View style={styles.mapHeaderRow}>
+            <View>
+              <Text style={styles.cardSubTitle}>오늘 이 테마가 많이 거래돼요</Text>
+              <View style={styles.mapTitleRow}>
+                <Text style={[styles.cardTitle, styles.mapCardTitle]}>국내 마켓맵</Text>
+                <Ionicons name="information-circle-outline" size={18} color="#8B90A1" />
+              </View>
+            </View>
+            <Image
+              source={require('../../assets/icons/Domestic_Market_Map.png')}
+              style={styles.mapHeaderIcon}
+              resizeMode="contain"
+            />
+          </View>
           <View style={styles.mapGrid}>
-            <View style={[styles.mapBox, { flex: 1.2, height: 140 }]}><Text style={styles.mapTxt}>소캠(SOCAMM){'\n'}+10.27%</Text></View>
-            <View style={{ flex: 1, gap: 8 }}>
-              <View style={[styles.mapBox, { height: 66 }]}><Text style={styles.mapTxt}>뉴로모픽{'\n'}+8.91%</Text></View>
+            <View style={[styles.mapBox, styles.mapBoxGray, styles.mapLeftTall]}>
+              <Text style={styles.mapTxt}>소캠(SOCAMM){'\n'}-0.79%</Text>
+            </View>
+            <View style={styles.mapRightCol}>
               <View style={styles.mapMiniRow}>
-                <View style={[styles.mapBox, { flex: 1, height: 66 }]}><Text style={styles.mapTxt}>CXL{'\n'}+9.47%</Text></View>
-                <View style={[styles.mapBox, { flex: 1, height: 66 }]}><Text style={styles.mapTxt}>마이크로{'\n'}+7.10%</Text></View>
+                <View style={[styles.mapBox, styles.mapBoxBlue, styles.mapHalfWide]}>
+                  <Text style={styles.mapTxt}>뉴로모픽 반도체{'\n'}-4.55%</Text>
+                </View>
+                <View style={[styles.mapBox, styles.mapBoxNavy, styles.mapHalfNarrow]}>
+                  <Text style={styles.mapTxt}>CXL(컴...){'\n'}-1.44%</Text>
+                </View>
+              </View>
+              <View style={styles.mapMiniRow}>
+                <View style={[styles.mapBox, styles.mapBoxGray, styles.mapThird]}>
+                  <Text style={styles.mapTxt}>마이크로...{'\n'}+0.91%</Text>
+                </View>
+                <View style={[styles.mapBox, styles.mapBoxNavy, styles.mapThird]}>
+                  <Text style={styles.mapTxt}>아이폰{'\n'}-1.15%</Text>
+                </View>
+                <View style={[styles.mapBox, styles.mapBoxBlue, styles.mapThird]}>
+                  <Text style={styles.mapTxt}>무선충전...{'\n'}-2.12%</Text>
+                </View>
+              </View>
+              <View style={styles.mapMiniRow}>
+                <View style={[styles.mapBox, styles.mapBoxNavy, styles.mapHalfWide]}>
+                  <Text style={styles.mapTxt}>공기청정기{'\n'}-1.57%</Text>
+                </View>
+                <View style={[styles.mapBox, styles.mapBoxBlue, styles.mapHalfWide]}>
+                  <Text style={styles.mapTxt}>온디바이스 AI{'\n'}-3.34%</Text>
+                </View>
               </View>
             </View>
           </View>
@@ -324,7 +468,7 @@ export function ExploreMainScreen({ navigation }: Props) {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#F2F2F5' },
-  container: { padding: 14, paddingBottom: 24 },
+  container: { padding: 14, paddingBottom: 80 },
   topHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -402,13 +546,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 14,
-    marginTop: 2,
-    marginBottom: 4,
+    paddingVertical: 0,
+    marginTop: 0,
+    marginBottom: 0,
   },
   /** 랭킹 카드 헤더만: 공용 cardTitle의 marginBottom 제거 */
   rankCardTitle: { marginBottom: 0, fontSize: 25, fontWeight: '900' },
-  rankTop5Icon: { width: 102, height: 62, marginRight: -18 },
+  rankTop5Icon: { width: 102, height: 82, marginRight: -6 },
   rankTabRowOuter: {
     marginTop: 6,
     marginBottom: 6,
@@ -426,7 +570,7 @@ const styles = StyleSheet.create({
   rankTabScrollContent: {
     flexDirection: 'row',
     alignItems: 'flex-end',
-    paddingBottom: 2,
+    paddingBottom: 0,
     paddingRight: 8,
   },
   rankTabItem: { marginRight: 20, paddingBottom: 8, flexShrink: 0, position: 'relative' },
@@ -441,6 +585,8 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   cardTitle: { fontSize: 18, fontWeight: '800', color: Colors.text, marginBottom: 10 },
+  trendCardTitle: { fontSize: 24, marginBottom: 0 },
+  trendTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 12 },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -471,15 +617,41 @@ const styles = StyleSheet.create({
   price: { fontSize: 18, color: '#DD3C8A', fontWeight: '800' },
   change: { fontSize: 16, color: '#DD3C8A', fontWeight: '600' },
   cardSubTitle: { fontSize: 14, color: '#7A7E8F', marginBottom: 4, fontWeight: '600' },
-  tableHead: { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 8 },
-  tableHeadTxt: { fontSize: 16, color: '#4D4F58', fontWeight: '600' },
+  tableHead: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8 },
+  tableHeadSpacer: { width: 64 },
+  tableHeadTxt: { flex: 1, textAlign: 'center', fontSize: 16, color: '#4D4F58', fontWeight: '600' },
+  tableHeadTxtPersonal: { marginLeft: 10 },
+  tableHeadTxtForeign: { marginLeft: 10 },
+  tableHeadTxtInstitution: { marginLeft: 10 },
   tableRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderTopWidth: 1, borderTopColor: '#F0F1F7', paddingVertical: 10 },
   tableLabel: { width: 52, fontSize: 16, color: '#4D4F58', fontWeight: '600' },
   tableBlue: { color: '#4C61C9', fontSize: 16, fontWeight: '700' },
   tablePink: { color: '#DD3C8A', fontSize: 16, fontWeight: '700' },
-  talkRow: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 10, borderTopWidth: 1, borderTopColor: '#F0F1F7' },
+  talkHeaderRow: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 4 },
+  talkCardTitle: { fontSize: 26, marginBottom: 0 },
+  talkHeaderIcon: { width: 108, height: 82, marginTop: -8, marginRight: -10 },
+  talkRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+    paddingVertical: 10,
+    paddingRight: 92,
+    borderTopWidth: 1,
+    borderTopColor: '#F0F1F7',
+    position: 'relative',
+  },
+  talkRowFirst: { borderTopWidth: 0 },
+  talkContent: { flex: 1 },
   talkName: { fontSize: 16, color: Colors.text, fontWeight: '700' },
   talkText: { fontSize: 14, color: '#4E5261', marginTop: 2 },
+  talkTime: { fontSize: 12, color: '#9CA1AF', fontWeight: '600', marginTop: 6 },
+  talkRight: { position: 'absolute', right: 0, top: 12, width: 86, alignItems: 'flex-end' },
+  talkChange: { fontSize: 16, color: '#DD3C8A', fontWeight: '700', textAlign: 'right' },
+  newsCard: { position: 'relative' },
+  newsHeaderRow: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' },
+  newsBody: { marginTop: 12 },
+  newsCardTitle: { fontSize: 24, marginBottom: 0, marginTop: 12 },
+  newsHeaderIcon: { width: 92, height: 68, marginTop: -10, marginRight: 2 },
   moreBtn: {
     marginTop: 12,
     height: 44,
@@ -489,35 +661,112 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   moreText: { color: '#4D4F58', fontSize: 16, fontWeight: '600' },
-  news: {
-    fontSize: 17,
-    color: '#272A34',
-    marginBottom: 10,
+  newsItem: { borderBottomWidth: 1, borderBottomColor: '#F0F1F7', paddingBottom: 14, marginBottom: 14 },
+  newsItemLast: { borderBottomWidth: 0, marginBottom: 0 },
+  newsTitle: { fontSize: 17, color: '#272A34' },
+  newsMeta: { marginTop: 4, fontSize: 12, color: '#A0A5B3', fontWeight: '600' },
+  collectCardPlain: {
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+    padding: 0,
+    marginTop: 30,
+    marginBottom: 40,
+  },
+  collectHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    paddingLeft: 14,
+    paddingRight: 4,
+  },
+  collectAddIcon: { marginTop: 8, marginRight: 10 },
+  collectCardTitle: { fontSize: 24 },
+  collectScroll: { marginHorizontal: -14 },
+  collectRowContent: { paddingHorizontal: 14 },
+  collectRow: { flexDirection: 'row', gap: 22, paddingTop: 6 },
+  collectItem: { alignItems: 'center', width: 68 },
+  collectLogoCircle: {
+    width: 50,
+    height: 50,
+    borderRadius: 30,
+    backgroundColor: '#EFF2FA',
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  collectName: { marginTop: 8, fontSize: 12, color: '#4E5261', fontWeight: '600', textAlign: 'center' },
+  storyHeaderRow: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' },
+  storyCardTitle: { fontSize: 24, marginBottom: 0 },
+  storyHeaderIcon: { width: 100, height: 74, marginTop: -8, marginRight: -10 },
+  storyList: { marginTop: 15 },
+  storyFirstItem: { marginTop: -10 },
+  storyItem: {
     borderBottomWidth: 1,
     borderBottomColor: '#F0F1F7',
     paddingBottom: 10,
+    marginBottom: 10,
   },
-  collectRow: { flexDirection: 'row', gap: 12, paddingTop: 6 },
-  collectItem: { alignItems: 'center', width: 56 },
-  collectName: { marginTop: 4, fontSize: 12, color: '#4E5261', fontWeight: '600' },
-  story: {
-    fontSize: 16,
-    color: '#272A34',
+  storyItemLast: { borderBottomWidth: 0, marginBottom: 0, paddingBottom: 0 },
+  storyTitle: { fontSize: 16, color: '#272A34' },
+  storyCategory: { marginTop: 4, fontSize: 12, color: Colors.primary, fontWeight: '700' },
+  storyMoreBtn: { marginTop: 15 },
+  masterHeaderRow: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' },
+  masterCardTitle: { fontSize: 24, marginBottom: 0 },
+  masterHeaderIcon: { width: 96, height: 72, marginTop: -8, marginRight: -6 },
+  masterAgeTabRow: {
+    marginTop: 6,
     marginBottom: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F0F1F7',
-    paddingBottom: 8,
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    gap: 32,
+    position: 'relative',
+    paddingBottom: 6,
   },
-  mapGrid: { flexDirection: 'row', gap: 8, marginTop: 8 },
-  mapMiniRow: { flexDirection: 'row', gap: 8 },
+  masterAgeTabItem: { position: 'relative', paddingBottom: 4, zIndex: 2 },
+  masterAgeTabText: { fontSize: 17, color: '#4D4F58', fontWeight: '600' },
+  masterAgeTabTextActive: { color: Colors.primary, fontWeight: '800' },
+  masterAgeUnderline: {
+    position: 'absolute',
+    left: '50%',
+    marginLeft: -16,
+    bottom: -6,
+    width: 32,
+    height: 2,
+    backgroundColor: Colors.primary,
+    borderRadius: 2,
+    zIndex: 3,
+  },
+  masterAgeBaseLine: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 2,
+    backgroundColor: '#EEF1F6',
+    zIndex: 1,
+  },
+  mapHeaderRow: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' },
+  mapTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  mapCardTitle: { fontSize: 24, marginBottom: 0 },
+  mapHeaderIcon: { width: 92, height: 68, marginTop: -8, marginRight: 2 },
+  mapGrid: { flexDirection: 'row', gap: 6, marginTop: 20 },
+  mapRightCol: { flex: 1, gap: 6 },
+  mapMiniRow: { flexDirection: 'row', gap: 6 },
+  mapLeftTall: { width: 126, height: 312 },
+  mapHalfWide: { flex: 2.35, height: 100 },
+  mapHalfNarrow: { flex: 1, height: 100 },
+  mapThird: { flex: 1, height: 100 },
   mapBox: {
-    backgroundColor: '#EF2D9D',
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 6,
   },
-  mapTxt: { color: '#fff', fontSize: 14, textAlign: 'center', fontWeight: '700' },
+  mapBoxGray: { backgroundColor: '#9DA1AD' },
+  mapBoxBlue: { backgroundColor: '#4555F2' },
+  mapBoxNavy: { backgroundColor: '#3F4BAA' },
+  mapTxt: { color: '#fff', fontSize: 12, textAlign: 'center', fontWeight: '700' },
+  mapMoreBtn: { marginTop: 20 },
   homeEdit: {
     backgroundColor: '#EDEEF2',
     borderRadius: 12,
