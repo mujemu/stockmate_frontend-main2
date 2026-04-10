@@ -83,7 +83,7 @@ const kiwoom: StockTradeUiConfig = {
 };
 
 const samsung: StockTradeUiConfig = {
-  codeLabel: '005930 · 코스피 · 대형주 · 신용A · 소수점',
+  codeLabel: '005930 · 코스피 · 증20 · 신용A · 소수점 · ~오후 8시',
   moodLine: '🙂 최근 반도체 업황 기대감에 1주일 전 대비 강세예요',
   chartHigh: '최고 215,000원',
   chartLow: '최저 181,000원',

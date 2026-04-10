@@ -202,34 +202,38 @@ export function StockTradeScreen({ navigation, route }: Props) {
             <View style={styles.chartScreenSection}>
               <StockTradeChartBlock d={d} stockName={stockName} />
               <View style={styles.chartTabRow}>
-                <View style={styles.chartTabLabels}>
-                  {(['1분', '일', '주', '월', '년'] as const).map((t) => {
-                    const cellStyle = [styles.chartTabCell, t === '일' && styles.chartTabCellSelected];
-                    if (t === '1분') {
-                      return (
-                        <View key={t} style={cellStyle}>
-                          <View style={styles.chartTabMinuteInner}>
-                            <Text style={styles.chartTab}>{t}</Text>
-                            <Ionicons name="caret-down" size={11} color="#B8BCC8" />
+                <View style={styles.chartTabLabelsWrap}>
+                  <View style={styles.chartTabLabels}>
+                    {(['1분', '일', '주', '월', '년'] as const).map((t) => {
+                      const cellStyle = [styles.chartTabCell, t === '일' && styles.chartTabCellSelected];
+                      if (t === '1분') {
+                        return (
+                          <View key={t} style={cellStyle}>
+                            <View style={styles.chartTabMinuteInner}>
+                              <Text style={styles.chartTab}>{t}</Text>
+                              <Ionicons name="caret-down" size={11} color="#B8BCC8" />
+                            </View>
                           </View>
-                        </View>
-                      );
-                    }
-                    if (t === '일') {
+                        );
+                      }
+                      if (t === '일') {
+                        return (
+                          <View key={t} style={cellStyle}>
+                            <Text style={styles.chartTabSelected}>{t}</Text>
+                          </View>
+                        );
+                      }
                       return (
                         <View key={t} style={cellStyle}>
-                          <Text style={styles.chartTabSelected}>{t}</Text>
+                          <Text style={styles.chartTab}>{t}</Text>
                         </View>
                       );
-                    }
-                    return (
-                      <View key={t} style={cellStyle}>
-                        <Text style={styles.chartTab}>{t}</Text>
-                      </View>
-                    );
-                  })}
+                    })}
+                  </View>
                 </View>
-                <Image source={CHART_TAB_ICON} style={styles.chartTabIcon} resizeMode="contain" />
+                <View style={styles.chartTabIconSlot} pointerEvents="box-none">
+                  <Image source={CHART_TAB_ICON} style={styles.chartTabIcon} resizeMode="contain" />
+                </View>
               </View>
               <View style={styles.bidAskWrap}>
                 <View style={styles.bidBar} />
@@ -670,9 +674,24 @@ const styles = StyleSheet.create({
     padding: 14,
   },
   sectionTitle: { fontSize: 26, fontWeight: '800', color: Colors.text, marginBottom: 10 },
-  chartTabRow: { flexDirection: 'row', marginTop: 12, alignItems: 'center' },
-  chartTabLabels: { flexDirection: 'row', gap: 24, marginLeft: 10, alignItems: 'center' },
-  chartTabIcon: { width: 80, height: 80, marginLeft: 'auto', marginRight: 12 },
+  chartTabRow: {
+    flexDirection: 'row',
+    marginTop: 12,
+    alignItems: 'center',
+    width: '100%',
+    alignSelf: 'stretch',
+  },
+  /** 글자 영역만 유동 — 오른쪽 아이콘 열과 분리 */
+  chartTabLabelsWrap: { flex: 1, minWidth: 0, marginRight: 4 },
+  chartTabLabels: { flexDirection: 'row', flexWrap: 'nowrap', gap: -6, alignItems: 'center' },
+  /** 항상 같은 오른쪽 슬롯 (글자 길이와 무관) */
+  chartTabIconSlot: {
+    width: 84,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
+  chartTabIcon: { width: 80, height: 80 },
   chartTab: { color: '#888DA0', fontSize: 18, fontWeight: '600' },
   /** Same cell shell for every period; only "일" uses gray background. */
   chartTabCell: {
