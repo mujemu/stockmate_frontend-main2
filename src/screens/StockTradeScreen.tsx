@@ -183,7 +183,7 @@ export function StockTradeScreen({ navigation, route }: Props) {
       </View>
       <Text style={styles.stockPrice}>{stockPrice}</Text>
       <Text style={styles.stockChange}>{stockChange}</Text>
-      {useBuiltUi && d ? <Text style={styles.meta}>{d.codeLabel}</Text> : null}
+      {useBuiltUi && d ? <MetaCodeLabel label={d.codeLabel} /> : null}
     </View>
   );
 
@@ -638,6 +638,8 @@ const styles = StyleSheet.create({
   stockPrice: { fontSize: 30, fontWeight: '900', color: Colors.text, marginTop: 4 },
   stockChange: { fontSize: 20, color: '#D7398A', fontWeight: '700' },
   meta: { marginTop: 4, color: '#8B8FA2', fontSize: 12 },
+  /** 구분 `|` — 본문 라벨보다 한 톤 연하게 */
+  metaSep: { color: '#E8EAEF', fontSize: 12 },
   moodBox: {
     marginHorizontal: 14,
     marginTop: 2,
@@ -847,4 +849,21 @@ const styles = StyleSheet.create({
   ruleBtnHalf: { flex: 1, backgroundColor: '#EFEFF2', borderRadius: 8, alignItems: 'center', paddingVertical: 10 },
   ruleBtnTxt: { color: '#505564', fontWeight: '700' },
 });
+
+function MetaCodeLabel({ label }: { label: string }) {
+  const parts = label.split(' | ');
+  if (parts.length <= 1) {
+    return <Text style={styles.meta}>{label}</Text>;
+  }
+  return (
+    <Text style={styles.meta}>
+      {parts.map((part, i) => (
+        <React.Fragment key={i}>
+          {i > 0 ? <Text style={styles.metaSep}> | </Text> : null}
+          {part}
+        </React.Fragment>
+      ))}
+    </Text>
+  );
+}
 

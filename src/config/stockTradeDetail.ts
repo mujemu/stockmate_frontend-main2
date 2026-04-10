@@ -37,7 +37,7 @@ export type StockTradeUiConfig = {
 };
 
 const kiwoom: StockTradeUiConfig = {
-  codeLabel: '039490 · 코스피 · 중20 · 신용A · 소수점',
+  codeLabel: '039490 | 코스피 | 증20 | 신용A | 소수점 | ~오후 8시',
   moodLine: '🙂 한 달 전보다 10.72% 올랐어요',
   chartHigh: '최고 517,000원',
   chartLow: '최저 366,000원',
@@ -83,7 +83,7 @@ const kiwoom: StockTradeUiConfig = {
 };
 
 const samsung: StockTradeUiConfig = {
-  codeLabel: '005930 · 코스피 · 증20 · 신용A · 소수점 · ~오후 8시',
+  codeLabel: '005930 | 코스피 | 증20 | 신용A | 소수점 | ~오후 8시',
   moodLine: '🙂 최근 반도체 업황 기대감에 1주일 전 대비 강세예요',
   chartHigh: '최고 215,000원',
   chartLow: '최저 181,000원',
@@ -129,7 +129,7 @@ const samsung: StockTradeUiConfig = {
 };
 
 const skhynix: StockTradeUiConfig = {
-  codeLabel: '000660 · 코스피 · 대형주 · 신용A · 소수점',
+  codeLabel: '000660 | 코스피 | 증20 | 신용A | 소수점 | ~오후 8시',
   moodLine: '🙂 HBM 수요 기대로 단기 변동성은 크지만 추세는 강해요',
   chartHigh: '최고 1,098,000원',
   chartLow: '최저 920,000원',
@@ -175,7 +175,7 @@ const skhynix: StockTradeUiConfig = {
 };
 
 const apr: StockTradeUiConfig = {
-  codeLabel: '278470 · 코스피 · 중형주 · 신용A · 소수점',
+  codeLabel: '278470 | 코스피 | 증20 | 신용A | 소수점 | ~오후 8시',
   moodLine: '🙂 브랜드 성장 기대 속에서 최근 거래대금이 늘었어요',
   chartHigh: '최고 318,000원',
   chartLow: '최저 268,000원',
@@ -221,7 +221,7 @@ const apr: StockTradeUiConfig = {
 };
 
 const amore: StockTradeUiConfig = {
-  codeLabel: '090430 · 코스피 · 중형주 · 신용A · 소수점',
+  codeLabel: '090430 | 코스피 | 증20 | 신용A | 소수점 | ~오후 8시',
   moodLine: '🙂 실적 개선 기대와 화장품 수출 회복에 대한 관심이 이어져요',
   chartHigh: '최고 182,000원',
   chartLow: '최저 158,000원',
