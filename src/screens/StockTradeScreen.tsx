@@ -788,7 +788,7 @@ const styles = StyleSheet.create({
   orderBtn: { flex: 1, borderRadius: 16, paddingVertical: 16, alignItems: 'center' },
   sell: { backgroundColor: '#6F64F2' },
   buy: { backgroundColor: '#FF5579' },
-  orderText: { color: '#fff', fontSize: 30, fontWeight: '800' },
+  orderText: { color: '#fff', fontSize: 20, fontWeight: '800' },
   modalRoot: { flex: 1, justifyContent: 'flex-end' },
   modalDim: {
     ...StyleSheet.absoluteFillObject,
