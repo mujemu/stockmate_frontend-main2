@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../config/colors';
 import { STOCK_TRADE_UI_KEYS, getStockTradeUi } from '../config/stockTradeDetail';
 import { fetchOrderPrinciple } from '../services/orderPrincipleApi';
@@ -141,16 +142,42 @@ export function StockTradeScreen({ navigation, route }: Props) {
   return (
     <SafeAreaView style={styles.safe}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.header}>
-          <Pressable onPress={() => navigation.goBack()}>
-            <Text style={styles.headerBtn}>〈</Text>
+        <View style={styles.topBar}>
+          <Pressable
+            style={styles.topBarIconHit}
+            onPress={() => navigation.goBack()}
+            accessibilityRole="button"
+            accessibilityLabel="뒤로"
+          >
+            <Ionicons name="chevron-down" size={26} color="#1A1D2D" />
           </Pressable>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.stockName}>{stockName}</Text>
-            <Text style={styles.stockPrice}>{stockPrice}</Text>
-            <Text style={styles.stockChange}>{stockChange}</Text>
-            {useBuiltUi && d ? <Text style={styles.meta}>{d.codeLabel}</Text> : null}
+          <View style={styles.topBarRight}>
+            <Pressable style={styles.topBarIconHit} accessibilityRole="button" accessibilityLabel="검색">
+              <Ionicons name="search-outline" size={22} color="#1A1D2D" />
+            </Pressable>
+            <Pressable style={styles.topBarIconHit} accessibilityRole="button" accessibilityLabel="관심">
+              <Ionicons name="star-outline" size={22} color="#1A1D2D" />
+            </Pressable>
+            <Pressable
+              style={styles.topBarIconHit}
+              onPress={() => navigation.goBack()}
+              accessibilityRole="button"
+              accessibilityLabel="닫기"
+            >
+              <Ionicons name="close" size={26} color="#1A1D2D" />
+            </Pressable>
           </View>
+        </View>
+        <View style={styles.stockSummary}>
+          <View style={styles.stockNameRow}>
+            <View style={styles.stockNameChevronCircle}>
+              <Ionicons name="chevron-down" size={15} color="#5C6068" />
+            </View>
+            <Text style={styles.stockName}>{stockName}</Text>
+          </View>
+          <Text style={styles.stockPrice}>{stockPrice}</Text>
+          <Text style={styles.stockChange}>{stockChange}</Text>
+          {useBuiltUi && d ? <Text style={styles.meta}>{d.codeLabel}</Text> : null}
         </View>
         {useBuiltUi && d ? (
           <>
@@ -518,9 +545,33 @@ export function StockTradeScreen({ navigation, route }: Props) {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#F5F5F8' },
   scrollContent: { paddingBottom: 8 },
-  header: { flexDirection: 'row', alignItems: 'center', padding: 14, gap: 10 },
-  headerBtn: { fontSize: 24, color: Colors.text },
-  stockName: { fontSize: 16, color: Colors.textSub, fontWeight: '700' },
+  topBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: '#F5F5F8',
+  },
+  topBarRight: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  topBarIconHit: {
+    paddingHorizontal: 6,
+    paddingVertical: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  stockSummary: { paddingHorizontal: 14, paddingTop: 4, paddingBottom: 8 },
+  stockNameRow: { flexDirection: 'row', alignItems: 'center' },
+  stockNameChevronCircle: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#ECEEF3',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 8,
+  },
+  stockName: { fontSize: 18, color: '#1A1D2D', fontWeight: '800' },
   stockPrice: { fontSize: 30, fontWeight: '900', color: Colors.text, marginTop: 4 },
   stockChange: { fontSize: 20, color: '#D7398A', fontWeight: '700' },
   meta: { marginTop: 4, color: '#8B8FA2', fontSize: 12 },
