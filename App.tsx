@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler';
 import React from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { NavigationContainer } from '@react-navigation/native';
+import { getFocusedRouteNameFromRoute, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -29,6 +29,18 @@ const StockMateStack = createStackNavigator();
 const FlowStack = createStackNavigator();
 const ExploreStack = createStackNavigator();
 const Tab = createBottomTabNavigator();
+
+/** 탐색 탭 — 종목 상세(StockTrade)에서는 하단 탭바 숨김 */
+const exploreTabBarVisibleStyle = {
+  position: 'absolute' as const,
+  borderTopWidth: 0,
+  borderTopColor: 'transparent',
+  elevation: 0,
+  shadowOpacity: 0,
+  backgroundColor: 'rgba(255,255,255,0.96)',
+  paddingTop: 4,
+  minHeight: 52,
+};
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const s = (c: any) => c as React.ComponentType<object>;
@@ -91,26 +103,21 @@ function MainTabs() {
         tabBarActiveTintColor: Colors.primary,
         tabBarInactiveTintColor: Colors.textMuted,
         tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
-        tabBarStyle: {
-          position: 'absolute',
-          borderTopWidth: 0,
-          borderTopColor: 'transparent',
-          elevation: 0,
-          shadowOpacity: 0,
-          backgroundColor: 'rgba(255,255,255,0.96)',
-          paddingTop: 4,
-          minHeight: 52,
-        },
+        tabBarStyle: exploreTabBarVisibleStyle,
       }}
     >
       <Tab.Screen
         name="Explore"
         component={s(ExploreStackNavigator)}
-        options={{
-          tabBarLabel: '탐색',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="globe-outline" color={color} size={size ?? 22} />
-          ),
+        options={({ route }) => {
+          const name = getFocusedRouteNameFromRoute(route) ?? 'ExploreMain';
+          return {
+            tabBarLabel: '탐색',
+            tabBarIcon: ({ color, size }: { color: string; size?: number }) => (
+              <Ionicons name="globe-outline" color={color} size={size ?? 22} />
+            ),
+            tabBarStyle: name === 'StockTrade' ? { display: 'none' } : exploreTabBarVisibleStyle,
+          };
         }}
       />
       <Tab.Screen

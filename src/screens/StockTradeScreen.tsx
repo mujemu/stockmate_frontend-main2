@@ -1,18 +1,20 @@
-import React, { useMemo, useState } from 'react';
+﻿import React, { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
   Modal,
   Pressable,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../config/colors';
 import { STOCK_TRADE_UI_KEYS, getStockTradeUi } from '../config/stockTradeDetail';
+import { StockTradeChartBlock } from '../components/StockTradeChartBlock';
 import { fetchOrderPrinciple } from '../services/orderPrincipleApi';
 import type { OrderPrincipleResult } from '../types/orderPrinciple';
 
@@ -32,6 +34,7 @@ const STOCK_LOGO: Record<string, ReturnType<typeof require>> = {
 };
 
 const KIMOONI_AVATAR = require('../../assets/k1.png');
+const CHART_TAB_ICON = require('../../assets/icons/chart.png');
 
 const STOCK_SHOTS: Record<string, any[]> = {
   키움증권: [
@@ -139,79 +142,126 @@ export function StockTradeScreen({ navigation, route }: Props) {
 
   const closeOrderModal = () => setOrderModalPhase(null);
 
+  const insets = useSafeAreaInsets();
+
+  const renderTopBar = () => (
+    <View style={styles.topBar}>
+      <Pressable
+        style={styles.topBarIconHit}
+        onPress={() => navigation.goBack()}
+        accessibilityRole="button"
+        accessibilityLabel="뒤로"
+      >
+        <Ionicons name="chevron-down" size={26} color="#1A1D2D" />
+      </Pressable>
+      <View style={styles.topBarRight}>
+        <Pressable style={styles.topBarIconHit} accessibilityRole="button" accessibilityLabel="검색">
+          <Ionicons name="search-outline" size={22} color="#1A1D2D" />
+        </Pressable>
+        <Pressable style={styles.topBarIconHit} accessibilityRole="button" accessibilityLabel="관심">
+          <Ionicons name="star-outline" size={22} color="#1A1D2D" />
+        </Pressable>
+        <Pressable
+          style={styles.topBarIconHit}
+          onPress={() => navigation.goBack()}
+          accessibilityRole="button"
+          accessibilityLabel="닫기"
+        >
+          <Ionicons name="close" size={26} color="#1A1D2D" />
+        </Pressable>
+      </View>
+    </View>
+  );
+
+  const renderStockSummary = () => (
+    <View style={styles.stockSummary}>
+      <View style={styles.stockNameRow}>
+        <View style={styles.stockNameChevronCircle}>
+          <Ionicons name="chevron-down" size={15} color="#5C6068" />
+        </View>
+        <Text style={styles.stockName}>{stockName}</Text>
+      </View>
+      <Text style={styles.stockPrice}>{stockPrice}</Text>
+      <Text style={styles.stockChange}>{stockChange}</Text>
+      {useBuiltUi && d ? <Text style={styles.meta}>{d.codeLabel}</Text> : null}
+    </View>
+  );
+
   return (
-    <SafeAreaView style={styles.safe}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.topBar}>
-          <Pressable
-            style={styles.topBarIconHit}
-            onPress={() => navigation.goBack()}
-            accessibilityRole="button"
-            accessibilityLabel="뒤로"
-          >
-            <Ionicons name="chevron-down" size={26} color="#1A1D2D" />
-          </Pressable>
-          <View style={styles.topBarRight}>
-            <Pressable style={styles.topBarIconHit} accessibilityRole="button" accessibilityLabel="검색">
-              <Ionicons name="search-outline" size={22} color="#1A1D2D" />
-            </Pressable>
-            <Pressable style={styles.topBarIconHit} accessibilityRole="button" accessibilityLabel="관심">
-              <Ionicons name="star-outline" size={22} color="#1A1D2D" />
-            </Pressable>
-            <Pressable
-              style={styles.topBarIconHit}
-              onPress={() => navigation.goBack()}
-              accessibilityRole="button"
-              accessibilityLabel="닫기"
-            >
-              <Ionicons name="close" size={26} color="#1A1D2D" />
-            </Pressable>
-          </View>
-        </View>
-        <View style={styles.stockSummary}>
-          <View style={styles.stockNameRow}>
-            <View style={styles.stockNameChevronCircle}>
-              <Ionicons name="chevron-down" size={15} color="#5C6068" />
-            </View>
-            <Text style={styles.stockName}>{stockName}</Text>
-          </View>
-          <Text style={styles.stockPrice}>{stockPrice}</Text>
-          <Text style={styles.stockChange}>{stockChange}</Text>
-          {useBuiltUi && d ? <Text style={styles.meta}>{d.codeLabel}</Text> : null}
-        </View>
+    <SafeAreaView style={styles.safe} edges={['bottom', 'left', 'right']}>
+      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+      <View style={[styles.statusBarFill, { height: insets.top }]} />
+      <View style={styles.stickyTopBarWrap}>{renderTopBar()}</View>
+      <ScrollView style={styles.scrollFlex} contentContainerStyle={styles.scrollContent}>
         {useBuiltUi && d ? (
-          <>
+          <View style={styles.heroCard}>
+            {renderStockSummary()}
             <View style={styles.moodBox}>
               <Text style={styles.moodText}>{d.moodLine}</Text>
             </View>
-            <View style={styles.card}>
-              <View style={styles.fakeChart}>
-                <View style={styles.grid1} />
-                <View style={styles.grid2} />
-                <View style={styles.grid3} />
-                <View style={styles.lineA} />
-                <View style={styles.lineB} />
-                <View style={styles.lineC} />
-                <Text style={styles.chartTop}>{d.chartHigh}</Text>
-                <Text style={styles.chartBottom}>{d.chartLow}</Text>
-                <Text style={styles.yRightTop}>{d.yRightTop}</Text>
-                <Text style={styles.yRightMid}>{d.yRightMid}</Text>
-                <Text style={styles.yRightBot}>{d.yRightBot}</Text>
-              </View>
+            <View style={styles.chartScreenSection}>
+              <StockTradeChartBlock d={d} stockName={stockName} />
               <View style={styles.chartTabRow}>
-                {['1분', '일', '주', '월', '년'].map((t) => (
-                  <Text key={t} style={[styles.chartTab, t === '일' && styles.chartTabOn]}>{t}</Text>
-                ))}
+                <View style={styles.chartTabLabels}>
+                  {(['1분', '일', '주', '월', '년'] as const).map((t) => {
+                    const cellStyle = [styles.chartTabCell, t === '일' && styles.chartTabCellSelected];
+                    if (t === '1분') {
+                      return (
+                        <View key={t} style={cellStyle}>
+                          <View style={styles.chartTabMinuteInner}>
+                            <Text style={styles.chartTab}>{t}</Text>
+                            <Ionicons name="caret-down" size={11} color="#B8BCC8" />
+                          </View>
+                        </View>
+                      );
+                    }
+                    if (t === '일') {
+                      return (
+                        <View key={t} style={cellStyle}>
+                          <Text style={styles.chartTabSelected}>{t}</Text>
+                        </View>
+                      );
+                    }
+                    return (
+                      <View key={t} style={cellStyle}>
+                        <Text style={styles.chartTab}>{t}</Text>
+                      </View>
+                    );
+                  })}
+                </View>
+                <Image source={CHART_TAB_ICON} style={styles.chartTabIcon} resizeMode="contain" />
               </View>
               <View style={styles.bidAskWrap}>
                 <View style={styles.bidBar} />
                 <View style={styles.askBar} />
               </View>
               <View style={styles.bidAskTxtRow}>
-                <Text style={styles.bidTxt}>{d.bidVol}</Text>
-                <Text style={styles.askTxt}>{d.askVol}</Text>
+                <View style={styles.bidAskColLeft}>
+                  <Text style={styles.bidAskLabelSell}>매도대기</Text>
+                  <Text style={styles.bidAskValue}>{d.bidVol.replace(/^매도대기\s*/, '')}</Text>
+                </View>
+                <View style={styles.bidAskColRight}>
+                  <Text style={styles.bidAskLabelBuy}>매수대기</Text>
+                  <Text style={styles.bidAskValue}>{d.askVol.replace(/^매수대기\s*/, '')}</Text>
+                </View>
               </View>
+              <Pressable
+                style={[styles.featureBtn, styles.featureBtnRealtimeHoga]}
+                onPress={() => {}}
+                accessibilityRole="button"
+                accessibilityLabel="실시간 호가"
+              >
+                <Text style={styles.featureTxt}>실시간 호가</Text>
+              </Pressable>
             </View>
+          </View>
+        ) : (
+          <View style={styles.heroCard}>
+            {renderStockSummary()}
+          </View>
+        )}
+        {useBuiltUi && d ? (
+          <>
             <View style={styles.card}>
               <Text style={styles.sectionTitle}>오늘 등락률 알림</Text>
               <Text style={styles.helper}>오늘 시작 가격 기준으로 도달 시 알려드릴게요.</Text>
@@ -544,14 +594,23 @@ export function StockTradeScreen({ navigation, route }: Props) {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#F5F5F8' },
+  scrollFlex: { flex: 1 },
   scrollContent: { paddingBottom: 8 },
+  /** 상태 표시줄(시간·배터리) 영역 — 상단바와 동일 흰 배경 */
+  statusBarFill: {
+    backgroundColor: '#fff',
+  },
+  /** 스크롤과 분리 — 상단 아이콘 바 고정 */
+  stickyTopBarWrap: {
+    backgroundColor: '#fff',
+  },
   topBar: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 12,
     paddingVertical: 8,
-    backgroundColor: '#F5F5F8',
+    backgroundColor: '#fff',
   },
   topBarRight: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   topBarIconHit: {
@@ -584,37 +643,63 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   moodText: { color: '#6B4BD8', fontWeight: '700' },
-  card: {
-    marginHorizontal: 14,
-    marginTop: 12,
-    borderRadius: 14,
+  /** 상단~실시간 호가: 화면 너비 흰 배경, 모서리 직각 (아래 카드들과 구분) */
+  heroCard: {
+    width: '100%',
+    alignSelf: 'stretch',
     backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ECECF3',
+    borderRadius: 0,
+    paddingBottom: 12,
+    marginBottom: 10,
+  },
+  /** 차트·호가 블록 (heroCard 안쪽 여백) */
+  chartScreenSection: {
+    marginTop: 12,
+    paddingHorizontal: 14,
+    paddingTop: 14,
+    paddingBottom: 8,
+  },
+  /** 본문 섹션: 히어로와 동일 — 좌우 끝까지, 모서리 직각 */
+  card: {
+    width: '100%',
+    alignSelf: 'stretch',
+    marginHorizontal: 0,
+    marginTop: 10,
+    borderRadius: 0,
+    backgroundColor: '#fff',
     padding: 14,
   },
   sectionTitle: { fontSize: 26, fontWeight: '800', color: Colors.text, marginBottom: 10 },
-  fakeChart: { height: 210, borderRadius: 10, backgroundColor: '#FAFAFC', overflow: 'hidden', marginTop: 6 },
-  grid1: { position: 'absolute', left: 0, right: 0, top: 55, borderTopWidth: 1, borderColor: '#E9EAF1' },
-  grid2: { position: 'absolute', left: 0, right: 0, top: 105, borderTopWidth: 1, borderColor: '#E9EAF1' },
-  grid3: { position: 'absolute', left: 0, right: 0, top: 155, borderTopWidth: 1, borderColor: '#E9EAF1' },
-  lineA: { position: 'absolute', left: 16, right: 120, top: 120, height: 2, backgroundColor: '#E65D79', transform: [{ rotate: '-14deg' }] },
-  lineB: { position: 'absolute', left: 80, right: 40, top: 132, height: 2, backgroundColor: '#E65D79', transform: [{ rotate: '8deg' }] },
-  lineC: { position: 'absolute', left: 200, right: 16, top: 110, height: 2, backgroundColor: '#E65D79', transform: [{ rotate: '-6deg' }] },
-  chartTop: { position: 'absolute', left: 12, top: 10, color: '#E25B74', fontWeight: '700', fontSize: 12 },
-  chartBottom: { position: 'absolute', left: 12, bottom: 12, color: '#6E78D1', fontWeight: '700', fontSize: 12 },
-  yRightTop: { position: 'absolute', right: 8, top: 10, color: '#8E93A7', fontSize: 11 },
-  yRightMid: { position: 'absolute', right: 8, top: 92, color: '#8E93A7', fontSize: 11 },
-  yRightBot: { position: 'absolute', right: 8, bottom: 10, color: '#8E93A7', fontSize: 11 },
-  chartTabRow: { flexDirection: 'row', gap: 16, marginTop: 12, alignItems: 'center' },
-  chartTab: { color: '#888DA0', fontSize: 18, fontWeight: '700' },
-  chartTabOn: { color: '#202430' },
+  chartTabRow: { flexDirection: 'row', marginTop: 12, alignItems: 'center' },
+  chartTabLabels: { flexDirection: 'row', gap: 24, marginLeft: 10, alignItems: 'center' },
+  chartTabIcon: { width: 80, height: 80, marginLeft: 'auto', marginRight: 12 },
+  chartTab: { color: '#888DA0', fontSize: 18, fontWeight: '600' },
+  /** Same cell shell for every period; only "일" uses gray background. */
+  chartTabCell: {
+    paddingHorizontal: 18,
+    paddingVertical: 8,
+    borderRadius: 10,
+    backgroundColor: 'transparent',
+  },
+  chartTabCellSelected: {
+    backgroundColor: '#F3F5F8',
+  },
+  chartTabMinuteInner: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  chartTabSelected: { color: '#1A1D2D', fontSize: 18, fontWeight: '800' },
   bidAskWrap: { marginTop: 10, height: 4, borderRadius: 4, overflow: 'hidden', flexDirection: 'row' },
   bidBar: { flex: 0.28, backgroundColor: '#6F64F2' },
   askBar: { flex: 0.72, backgroundColor: '#F05C80' },
-  bidAskTxtRow: { marginTop: 8, flexDirection: 'row', justifyContent: 'space-between' },
-  bidTxt: { color: '#6F64F2', fontWeight: '700' },
-  askTxt: { color: '#F05C80', fontWeight: '700' },
+  bidAskTxtRow: {
+    marginTop: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  bidAskColLeft: { alignItems: 'flex-start' },
+  bidAskColRight: { alignItems: 'flex-end' },
+  bidAskLabelSell: { color: '#6F64F2', fontSize: 15, fontWeight: '600' },
+  bidAskLabelBuy: { color: '#E85A7A', fontSize: 15, fontWeight: '600' },
+  bidAskValue: { marginTop: 4, color: '#1A1D2D', fontSize: 19, fontWeight: '800' },
   chipRow: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
   chip: { backgroundColor: '#F3F3F6', borderRadius: 10, paddingHorizontal: 12, paddingVertical: 8 },
   chipTxt: { color: '#3E4150', fontWeight: '700' },
@@ -633,6 +718,12 @@ const styles = StyleSheet.create({
   orderStateRow: { backgroundColor: '#F3F3F5', borderRadius: 10, flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 12 },
   orderState: { color: '#585E72', fontWeight: '700' },
   featureBtn: { backgroundColor: '#F1F1F4', borderRadius: 12, alignItems: 'center', paddingVertical: 12, marginTop: 10 },
+  /** 차트 화면 — 매도/매수 문구·하단 여백 */
+  featureBtnRealtimeHoga: {
+    marginTop: 20,
+    marginBottom: 12,
+    paddingVertical: 14,
+  },
   featureTxt: { color: '#3A3E4E', fontWeight: '700' },
   rankTable: { backgroundColor: '#F7F7FB', borderRadius: 10, padding: 10 },
   newsTabRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 },

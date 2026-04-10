@@ -85,11 +85,11 @@ const kiwoom: StockTradeUiConfig = {
 const samsung: StockTradeUiConfig = {
   codeLabel: '005930 · 코스피 · 대형주 · 신용A · 소수점',
   moodLine: '🙂 최근 반도체 업황 기대감에 1주일 전 대비 강세예요',
-  chartHigh: '최고 228,000원',
-  chartLow: '최저 198,500원',
-  yRightTop: '228,000',
-  yRightMid: '213,200',
-  yRightBot: '198,500',
+  chartHigh: '최고 215,000원',
+  chartLow: '최저 181,000원',
+  yRightTop: '215,000',
+  yRightMid: '198,000',
+  yRightBot: '181,000',
   bidVol: '매도대기 12,420주',
   askVol: '매수대기 18,903주',
   stockDesc:
