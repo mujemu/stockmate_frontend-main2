@@ -110,7 +110,7 @@ export function OwlReportHeroFollowScreen({ navigation }: Props) {
         <View style={styles.card}>
           <Text style={styles.leadTitle}>추천 원칙 모음</Text>
           <Text style={styles.leadSub}>
-            미리 준비된 원칙 {MAX_PRESET_COUNT}개입니다. 필요한 항목만 `담기`로 내 투자 원칙에 추가하세요.
+            영웅들의 전략을 담아 내 투자 원칙을 바꿔보세요.
           </Text>
 
           {loading ? (
