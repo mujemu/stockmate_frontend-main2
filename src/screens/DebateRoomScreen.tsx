@@ -619,9 +619,9 @@ export function DebateRoomScreen({ navigation, route }: Props) {
           { kind: 'agent' as const, id: tempId, agentId, agentName, text: '' },
         ]);
 
-        // 타이핑 속도: 천천히 읽히도록 글자당 시간·최소·최대 길게
-        const totalMs    = Math.min(Math.max(text.length * 58, 3200), 14000);
-        const tickMs     = 52;
+        // 타이핑 속도: 글자당 18ms, 최소 800ms, 최대 5000ms
+        const totalMs    = Math.min(Math.max(text.length * 18, 800), 5000);
+        const tickMs     = 32;
         const ticks      = Math.ceil(totalMs / tickMs);
         const charsPerTick = Math.ceil(text.length / ticks);
 
@@ -1047,12 +1047,16 @@ export function DebateRoomScreen({ navigation, route }: Props) {
       await new Promise<void>((r) => setTimeout(r, 200));
 
       try {
-        // 백엔드에 포스트 기록
-        const post = await StockmateApiV1.forum.createPost(tid, { user_id: uid, content: shortLabel });
-        setRows((prev) => {
-          const base = prev.filter((r) => r.id !== optimisticId);
-          return [...base, { kind: 'post', id: post.id, userId: post.user_id, text: post.content, mine: true }];
-        });
+        // 백엔드에 포스트 기록 (실패해도 LLM 응답은 계속 진행)
+        try {
+          const post = await StockmateApiV1.forum.createPost(tid, { user_id: uid, content: shortLabel });
+          setRows((prev) => {
+            const base = prev.filter((r) => r.id !== optimisticId);
+            return [...base, { kind: 'post', id: post.id, userId: post.user_id, text: post.content, mine: true }];
+          });
+        } catch {
+          /* 포스트 기록 실패는 무시하고 LLM 응답 계속 진행 */
+        }
         listNearBottomRef.current = true;
         setSending(false);
         setAgentReplying(true);
