@@ -417,7 +417,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     overflow: 'hidden',
   },
-  hLogoSmallImg: { width: 46, height: 46 },
+  hLogoSmallImg: { width: '100%', height: '100%' },
   hLogoSmallTxt: { fontSize: 15, fontWeight: '900', color: Colors.primary },
   holdingMid: { flex: 1, minWidth: 0 },
   holdingName: { fontSize: 15, fontWeight: '800', color: Colors.text },

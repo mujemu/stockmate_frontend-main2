@@ -96,7 +96,7 @@ export function WatchlistScreen({ navigation }: Props) {
               accessibilityLabel={`${item.name} 종목 상세`}
             >
               <View style={styles.logoWrap}>
-                <Image source={item.logo} style={styles.logo} resizeMode="contain" />
+                <Image source={item.logo} style={styles.logo} resizeMode="cover" />
               </View>
               <Text style={styles.name}>{item.name}</Text>
               <View style={{ marginLeft: 'auto', alignItems: 'flex-end' }}>
@@ -133,8 +133,8 @@ const styles = StyleSheet.create({
   cardTitle: { fontSize: 34, fontWeight: '900', color: Colors.primary },
   menuIcon: { marginLeft: 'auto', color: '#6C7082', fontSize: 18 },
   row: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10 },
-  logoWrap: { width: 46, height: 46, borderRadius: 23, backgroundColor: '#EEF0F6', marginRight: 10, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
-  logo: { width: 46, height: 46 },
+  logoWrap: { width: 46, height: 46, borderRadius: 23, backgroundColor: '#EEF0F6', marginRight: 10, overflow: 'hidden' },
+  logo: { width: '100%', height: '100%' },
   name: { fontSize: 16, color: Colors.text, fontWeight: '700' },
   price: { fontSize: 19, color: '#D34588', fontWeight: '800' },
   priceNegative: { color: '#4C61C9' },
