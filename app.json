@@ -35,14 +35,13 @@
     },
     "plugins": [
       "expo-video",
-      "expo-updates"
+      "expo-updates",
+      "expo-font"
     ],
     "updates": {
       "url": "https://u.expo.dev/9b80bebc-ff63-4101-a893-65a15b6fc799"
     },
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
+    "runtimeVersion": "1.0.0",
     "extra": {
       "eas": {
         "projectId": "9b80bebc-ff63-4101-a893-65a15b6fc799"
