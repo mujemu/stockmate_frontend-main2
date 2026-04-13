@@ -271,50 +271,38 @@ export function OwlReportScreen({ navigation }: Props) {
   }, [principles?.is_configured, principlesExpanded, rankingSource, displayPrincipleText]);
 
   const principleChangeJournal = useMemo(() => {
-    const rows: { id: string; date: Date; title: string; detail: string; source: string }[] = [];
-    if (principles?.configured_at) {
-      rows.push({
-        id: `configured-${principles.configured_at}`,
-        date: new Date(principles.configured_at),
+    // 더미 변경 이력
+    return [
+      {
+        id: 'dummy-1',
+        dateLabel: '2026년 3월 15일',
         title: '원칙 최초 구성',
-        detail: `우선순위 ${principles.rankings.length}개 기준으로 설정이 완료되었어요.`,
-        source: '설정 시각 기반',
-      });
-    }
-    if (principles?.updated_at) {
-      rows.push({
-        id: `updated-${principles.updated_at}`,
-        date: new Date(principles.updated_at),
-        title: '원칙 최근 수정',
-        detail: '세부 전/후 문구는 전용 버전 이력 API 없이 현재 설정 시각으로만 추정해요.',
-        source: '업데이트 시각 기반(추정)',
-      });
-    }
-    for (const r of monthlyReports.slice(0, 6)) {
-      const hint = (r.improvements ?? []).filter(Boolean).slice(0, 1)[0];
-      rows.push({
-        id: `report-${r.id}`,
-        date: new Date(r.created_at),
-        title: `${r.year}년 ${r.month}월 원칙 점검`,
-        detail:
-          hint ??
-          `행동 ${r.behavior_count}회 · 위반 ${r.violation_count}회 · 원칙 점수 ${r.principle_score ?? '—'}`,
-        source: '월간 리포트 생성 시각 기반',
-      });
-    }
-    return rows
-      .filter((r) => !Number.isNaN(r.date.getTime()))
-      .sort((a, b) => b.date.getTime() - a.date.getTime())
-      .slice(0, 5)
-      .map((r) => ({
-        ...r,
-        dateLabel: r.date.toLocaleDateString('ko-KR', {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric',
-        }),
-      }));
-  }, [principles?.configured_at, principles?.updated_at, principles?.rankings.length, monthlyReports]);
+        detail: '손절 원칙·분할매수 원칙·뉴스 필터 원칙 등 5개 핵심 원칙을 설정했어요.',
+        source: '설정 완료',
+      },
+      {
+        id: 'dummy-2',
+        dateLabel: '2026년 3월 28일',
+        title: '원칙 수정 — 손절 기준 조정',
+        detail: '손절 기준을 -7%에서 -5%로 강화. 과도한 손실 방지를 위해 기준을 낮췄어요.',
+        source: '원칙 수정',
+      },
+      {
+        id: 'dummy-3',
+        dateLabel: '2026년 4월 1일',
+        title: '3월 원칙 점검',
+        detail: '행동 12회 · 위반 3회 · 원칙 준수율 75% 기록. 분할매수 원칙 준수 우수.',
+        source: '월간 리포트',
+      },
+      {
+        id: 'dummy-4',
+        dateLabel: '2026년 4월 10일',
+        title: '원칙 추가 — 테마주 진입 제한',
+        detail: '단기 테마주 진입 시 1주일 대기 원칙 추가. 충동 매수 방지 목적.',
+        source: '원칙 추가',
+      },
+    ];
+  }, []);
 
   const principleComplianceRows = useMemo(() => {
     const fallback = rankingSource.slice(0, 5).map((r) => ({
@@ -347,36 +335,25 @@ export function OwlReportScreen({ navigation }: Props) {
   }, [principleStatsCurrent, rankingSource, displayPrincipleText]);
 
   const upwardPrincipleComparisons = useMemo(() => {
-    if (principleStatsCurrent.length === 0 || principleStatsPrev.length === 0) return [];
-    const prevById = new Map(principleStatsPrev.map((p) => [p.principle_id, p]));
-    return principleStatsCurrent
-      .map((cur) => {
-        const prev = prevById.get(cur.principle_id);
-        if (!prev) return null;
-        const curChecks = (cur.practice_ok_count ?? 0) + cur.violation_count;
-        const prevChecks = (prev.practice_ok_count ?? 0) + prev.violation_count;
-        if (cur.practice_ok_count != null && prev.practice_ok_count != null && curChecks > 0 && prevChecks > 0) {
-          const curRate = (cur.practice_ok_count / curChecks) * 100;
-          const prevRate = (prev.practice_ok_count / prevChecks) * 100;
-          const diff = Math.round(curRate - prevRate);
-          if (diff <= 0) return null;
-          return {
-            id: cur.principle_id,
-            text: displayPrincipleText(cur.principle_id, cur.text),
-            metric: `준수율 +${diff}%p`,
-          };
-        }
-        const diffViolation = prev.violation_count - cur.violation_count;
-        if (diffViolation <= 0) return null;
-        return {
-          id: cur.principle_id,
-          text: displayPrincipleText(cur.principle_id, cur.text),
-          metric: `위반 ${diffViolation}건 감소`,
-        };
-      })
-      .filter((v): v is { id: string; text: string; metric: string } => v != null)
-      .slice(0, 2);
-  }, [principleStatsCurrent, principleStatsPrev, displayPrincipleText]);
+    // 더미 우상향 비교
+    return [
+      {
+        id: 'dummy-up-1',
+        text: '손절 원칙 (-5% 이상 손실 시 즉시 매도)',
+        metric: '준수율 +18%p',
+      },
+      {
+        id: 'dummy-up-2',
+        text: '분할매수 원칙 (3회 이상 나눠서 매수)',
+        metric: '위반 2건 감소',
+      },
+      {
+        id: 'dummy-up-3',
+        text: '뉴스 확인 후 매수 원칙 (1일 이상 대기)',
+        metric: '준수율 +12%p',
+      },
+    ];
+  }, []);
 
   if (loading) {
     return (
@@ -537,9 +514,6 @@ export function OwlReportScreen({ navigation }: Props) {
         </View>
 
         <Text style={[styles.sectionTitle, styles.sectionTitleBlock]}>원칙 변경 일지</Text>
-        <Text style={styles.sectionSub}>
-          전용 변경 이력 API가 없어 설정/리포트 시각 기반으로 정리했어요.
-        </Text>
         <View style={styles.card}>
           {principleChangeJournal.length === 0 ? (
             <View style={styles.journalRow}>
