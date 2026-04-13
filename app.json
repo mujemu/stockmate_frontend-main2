@@ -34,6 +34,7 @@
       "output": "single"
     },
     "plugins": [
+      "./plugins/withKotlinVersion",
       "expo-video",
       "expo-updates",
       "expo-font",
