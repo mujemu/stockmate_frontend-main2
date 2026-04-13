@@ -589,6 +589,22 @@ export function DebateRoomScreen({ navigation, route }: Props) {
     };
   }, [scrollChatToEnd]);
 
+  // ── initLoading 해제 시 FlatList 최초 마운트 → 맨 아래로 스크롤 ─────────────────
+  // initLoading=true 동안 FlatList가 렌더링되지 않아 addAgentTyping 내부의
+  // scrollToEnd 호출이 모두 무효(listRef=null)가 됨.
+  // false로 전환된 직후 FlatList가 마운트되므로 여기서 한 번 강제 스크롤한다.
+  useEffect(() => {
+    if (!initLoading && rows.length > 0) {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          listRef.current?.scrollToEnd({ animated: false });
+        });
+      });
+    }
+  // rows.length 의존은 의도적으로 제외 — initLoading 전환 시 한 번만 발화
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initLoading]);
+
   // ── 에이전트 메시지 타이핑 효과 ───────────────────────────────────────────────
   const addAgentTyping = useCallback(
     async (agentId: AgentId, agentName: string, text: string, postId: string) => {

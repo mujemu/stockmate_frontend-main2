@@ -36,7 +36,17 @@
     "plugins": [
       "expo-video",
       "expo-updates",
-      "expo-font"
+      "expo-font",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "kotlinVersion": "1.9.25",
+            "enableProguardInReleaseBuilds": false,
+            "enableShrinkResourcesInReleaseBuilds": false
+          }
+        }
+      ]
     ],
     "updates": {
       "url": "https://u.expo.dev/9b80bebc-ff63-4101-a893-65a15b6fc799"

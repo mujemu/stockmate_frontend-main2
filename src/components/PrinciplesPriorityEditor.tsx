@@ -26,9 +26,9 @@ import { PrinciplesParamDragSlider } from './PrinciplesParamDragSlider';
 const POOL_SIZE = 23;
 const MIN_SELECTED = 5;
 
-/** 키움 컬러 */
+/** 컬러 */
 const K = {
-  orange: '#E8400A',
+  orange: '#5E35B1',
   navy:   '#1A3C6E',
   bg:     '#F5F5F5',
   white:  '#FFFFFF',

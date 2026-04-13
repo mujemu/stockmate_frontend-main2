@@ -12,7 +12,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const BG = '#FFFFFF';
-const PRIMARY = '#E8400A';   // 키움 오렌지
+const PRIMARY = '#5E35B1';
 const NAVY   = '#1A3C6E';    // 키움 네이비
 const MUTED  = '#9EA3B0';
 
