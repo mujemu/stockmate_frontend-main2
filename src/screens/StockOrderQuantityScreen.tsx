@@ -94,7 +94,7 @@ export function StockOrderQuantityScreen({ navigation, route }: Props) {
   const [forceCheckRoomRequired, setForceCheckRoomRequired] = useState(false);
   const [principlesStatus, setPrinciplesStatus] = useState<PrinciplesStatusDto | null>(null);
   const [postTradeLedger, setPostTradeLedger] = useState<ViolationLedger | null>(null);
-  const [postTradeViolationsExpanded, setPostTradeViolationsExpanded] = useState(false);
+  const [postTradeViolationsExpanded] = useState(false);
   const [doneLedgerToken, setDoneLedgerToken] = useState(0);
   const doneLedgerConsumedRef = useRef(-1);
 
@@ -405,7 +405,6 @@ export function StockOrderQuantityScreen({ navigation, route }: Props) {
   }, [phase, doneLedgerToken, userReady, userId, hasDecisionViolation, violatedPrinciples]);
 
   const onQuantitySheetConfirm = async () => {
-    setPostTradeViolationsExpanded(false);
     let qty = Math.max(1, parseInt(quantity || '1', 10) || 1);
     if (orderType === 'sell') {
       if (sellableQty === 'loading') return;
@@ -580,29 +579,54 @@ export function StockOrderQuantityScreen({ navigation, route }: Props) {
                       </Text>
                       {postTradeLedger ? (
                         <>
-                          <Text style={styles.strikeLine}>
-                            누적 위반 {postTradeLedger.globalStrikes}회
-                          </Text>
-                          {postTradePrincipleLines.length > 0 ? (
-                            <>
-                              <Text style={styles.violationList}>
-                                {postTradeViolationsExpanded
-                                  ? postTradePrincipleLines.join('\n')
-                                  : postTradePrincipleLines[0]}
-                              </Text>
-                              {postTradePrincipleLines.length > 1 ? (
-                                <Pressable
-                                  style={styles.violationToggleBtn}
-                                  onPress={() => setPostTradeViolationsExpanded((v) => !v)}
-                                  hitSlop={8}
+                          {/* 원칙별 "n번째 어기고 있어요" 배너 */}
+                          {Object.entries(postTradeLedger.principleCounts)
+                            .filter(([, n]) => n > 0)
+                            .sort((a, b) => b[1] - a[1])
+                            .map(([label, n]) => {
+                              const isDanger = n >= 5;
+                              return (
+                                <View
+                                  key={label}
+                                  style={[
+                                    styles.violationNthBanner,
+                                    isDanger && styles.violationNthBannerDanger,
+                                  ]}
                                 >
-                                  <Text style={styles.violationToggleTxt}>
-                                    {postTradeViolationsExpanded ? '접기' : '더보기'}
+                                  <View style={[styles.violationNthDot, isDanger && styles.violationNthDotDanger]} />
+                                  <View style={styles.violationNthBody}>
+                                    <Text style={[styles.violationNthLabel, isDanger && styles.violationNthLabelDanger]}>
+                                      {label}
+                                    </Text>
+                                    <Text style={[styles.violationNthCount, isDanger && styles.violationNthCountDanger]}>
+                                      이 원칙 {n}번째 어기고 있어요{isDanger ? ' — 점검방 확인 권장' : ''}
+                                    </Text>
+                                  </View>
+                                  <View style={[styles.violationNthBadge, isDanger && styles.violationNthBadgeDanger]}>
+                                    <Text style={[styles.violationNthBadgeTxt, isDanger && styles.violationNthBadgeTxtDanger]}>
+                                      {n}회
+                                    </Text>
+                                  </View>
+                                </View>
+                              );
+                            })}
+                          {/* principleCounts가 없을 때 globalStrikes 폴백 */}
+                          {Object.keys(postTradeLedger.principleCounts).length === 0 &&
+                            postTradeLedger.globalStrikes > 0 && (
+                              <View style={styles.violationNthBanner}>
+                                <View style={styles.violationNthDot} />
+                                <View style={styles.violationNthBody}>
+                                  <Text style={styles.violationNthCount}>
+                                    이 원칙 {postTradeLedger.globalStrikes}번째 어기고 있어요
                                   </Text>
-                                </Pressable>
-                              ) : null}
-                            </>
-                          ) : null}
+                                </View>
+                                <View style={styles.violationNthBadge}>
+                                  <Text style={styles.violationNthBadgeTxt}>
+                                    {postTradeLedger.globalStrikes}회
+                                  </Text>
+                                </View>
+                              </View>
+                            )}
                         </>
                       ) : (
                         <ActivityIndicator color={Colors.primary} style={{ marginTop: 8 }} />
@@ -761,4 +785,61 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   doneConfirmBtn: { marginTop: 16, alignSelf: 'stretch', flex: 0 },
+
+  /* ── 원칙 n번째 어기고 있어요 배너 ── */
+  violationNthBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFBF0',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#FFD54F',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    marginTop: 10,
+    gap: 10,
+  },
+  violationNthBannerDanger: {
+    backgroundColor: '#FFF3F3',
+    borderColor: '#EF5350',
+  },
+  violationNthDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#F9A825',
+    flexShrink: 0,
+  },
+  violationNthDotDanger: {
+    backgroundColor: '#EF5350',
+  },
+  violationNthBody: { flex: 1, minWidth: 0 },
+  violationNthLabel: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#6D5400',
+    marginBottom: 2,
+  },
+  violationNthLabelDanger: { color: '#B71C1C' },
+  violationNthCount: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#7A5E00',
+    lineHeight: 20,
+  },
+  violationNthCountDanger: { color: '#C62828' },
+  violationNthBadge: {
+    backgroundColor: '#FFD54F',
+    borderRadius: 8,
+    paddingHorizontal: 9,
+    paddingVertical: 4,
+    flexShrink: 0,
+  },
+  violationNthBadgeDanger: { backgroundColor: '#EF5350' },
+  violationNthBadgeTxt: {
+    fontSize: 13,
+    fontWeight: '900',
+    color: '#5C3D00',
+  },
+  violationNthBadgeTxtDanger: { color: '#fff' },
 });
