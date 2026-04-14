@@ -949,17 +949,6 @@ export function DebateRoomScreen({ navigation, route }: Props) {
                   }
                 }
               } catch { /* 초기 응답 실패는 조용히 */ }
-            } else if (!cancelled && !isOrderPrincipleNav) {
-              // 일반 공론장: 기존 자동 개시
-              try {
-                const opening = await StockmateApiV1.forum.openDebate(topic.id, {
-                  stock_name: paramStockName ?? null,
-                });
-                for (const r of opening.replies) {
-                  if (cancelled) break;
-                  await addAgentTyping(r.agent_id as AgentId, r.agent_name, r.content, r.post.id);
-                }
-              } catch { /* 개시 실패는 조용히 */ }
             }
           }
         }
