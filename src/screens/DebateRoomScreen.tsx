@@ -32,6 +32,7 @@ import {
 } from '../config/orderPrincipleViolationCopy';
 import { ForumHeroStage } from '../components/ForumHeroStage';
 import { useUserSession } from '../context/UserSessionContext';
+import { navigationRef } from '../navigation/navigationRef';
 import { StockmateApiV1 } from '../services/stockmateApiV1';
 import type {
   AgentReplyBody,
@@ -359,6 +360,9 @@ export function DebateRoomScreen({ navigation, route }: Props) {
   const orderContext = isSectorOnlyNav ? undefined : raw.orderContext;
   const orderContextRef = useRef(orderContext);
   orderContextRef.current = orderContext;
+
+  /** StrictMode / dep 변화로 init effect 가 두 번 실행되는 것을 막는 가드 */
+  const initDoneRef = useRef(false);
 
   const [keyboardExtraPad, setKeyboardExtraPad] = useState(0);
   const [initLoading,   setInitLoading]   = useState(true);
@@ -817,6 +821,9 @@ export function DebateRoomScreen({ navigation, route }: Props) {
       setInitError(sessionError?.message ?? '사용자 세션을 만들 수 없습니다.');
       return;
     }
+    // StrictMode·dep 변화로 두 번 실행 방지: userId 획득 후 한 번만 실행
+    if (initDoneRef.current) return;
+    initDoneRef.current = true;
 
     let cancelled = false;
     (async () => {
@@ -1077,8 +1084,13 @@ export function DebateRoomScreen({ navigation, route }: Props) {
 
         // ── 씬 4B 재고민: 피드백 후 퇴장 (매매 자동 취소) ──────────────
         if (shortLabel === '다시 고민') {
-          await new Promise<void>((r) => setTimeout(r, 1800));
-          navigation.goBack();
+          await new Promise<void>((r) => setTimeout(r, 2200));
+          // navigationRef(루트 네비게이터)로 goBack — 중첩 네비게이터 환경에서도 확실히 동작
+          if (navigationRef.isReady()) {
+            (navigationRef as unknown as { goBack: () => void }).goBack();
+          } else {
+            navigation.goBack();
+          }
           return;
         }
 
